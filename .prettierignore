@@ -1,0 +1,37 @@
+# Ignore artifacts:
+build
+dist
+.turbo
+
+# Ignore development artifacts:
+*.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore node_modules
+node_modules
+
+# Ignore generated files
+coverage
+
+# Ignore Cypress files
+cypress/videos
+cypress/screenshots
+
+# Ignore Jest cache
+.jest-cache
+
+# Ignore IDE files
+.vscode
+.idea
+
+# Ignore other config files that might conflict
+*.config.js
+*.config.cjs
+*.config.mjs
+
+# Ignore package-lock.json
+package-lock.json
