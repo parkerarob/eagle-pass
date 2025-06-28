@@ -1,41 +1,40 @@
-describe("App Authentication Flow", () => {
+describe("App Test Mode Behavior", () => {
   beforeEach(() => {
     cy.visit("/");
   });
 
-  it("should show authentication page when not logged in", () => {
-    // Test for auth page elements instead of exact text
-    cy.contains("Sign in to your account").should("be.visible");
-    cy.contains("Sign in with Google").should("be.visible");
-    cy.get("button").contains("Sign in with Google").should("be.enabled");
+  it("should show authenticated state in test mode", () => {
+    // In test mode, authentication is bypassed and we should see the authenticated view
+    cy.contains("Welcome, Test User").should("be.visible");
+    cy.contains("Sign Out").should("be.visible");
+    cy.contains("Pass Lifecycle Demo").should("be.visible");
   });
 
-  it("should have proper page structure", () => {
+  it("should have proper page structure when authenticated", () => {
     // Test for structural elements that are stable
     cy.get("div").should("exist"); // App container exists
-    cy.get("h2").should("be.visible"); // Heading exists
-    cy.get("button").should("be.visible"); // Button exists
+    cy.get("h1").contains("Welcome, Test User").should("be.visible"); // Header exists
+    cy.get("button").contains("Sign Out").should("be.visible"); // Sign out button exists
   });
 
-  it("should handle authentication interaction", () => {
-    // Test button interaction (without actually signing in)
-    cy.get("button").contains("Sign in with Google").should("be.enabled");
-    // We don't actually click since it would require real Google auth
-    // Instead we test that the button is interactive
-    cy.get("button").contains("Sign in with Google").should("not.be.disabled");
+  it("should show pass creation form", () => {
+    // Test that the pass lifecycle page is loaded with form elements
+    cy.get('[data-cy="student-id-input"]').should("be.visible");
+    cy.get('[data-cy="origin-location-input"]').should("be.visible");
+    cy.get('[data-cy="pass-type-select"]').should("be.visible");
+    cy.get("button").contains("Create Pass").should("be.visible");
   });
 });
 
-// Test authenticated state (would need mock auth or test user)
+// Test authenticated state functionality
 describe("App Authenticated State", () => {
-  // This would require setting up mock authentication or test users
-  // For now, we'll skip this but structure it properly
+  beforeEach(() => {
+    cy.visit("/");
+  });
 
-  it.skip("should show pass lifecycle page when authenticated", () => {
-    // TODO: Mock authentication state
-    // cy.mockAuth({ user: { email: 'test@example.com', displayName: 'Test User' } });
-    // cy.visit('/');
-    // cy.get('[data-cy="pass-form"]').should('be.visible');
-    // cy.contains('Pass Lifecycle Demo').should('be.visible');
+  it("should show pass lifecycle page when authenticated", () => {
+    // Since we're in test mode, authentication is mocked
+    cy.contains("Pass Lifecycle Demo").should("be.visible");
+    cy.get('[data-cy="student-id-input"]').should("be.visible");
   });
 });
