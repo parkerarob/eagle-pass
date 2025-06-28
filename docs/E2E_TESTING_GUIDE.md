@@ -119,6 +119,9 @@ Our app now automatically bypasses authentication in test mode (when running und
 
 **Note:** Backend operations (like Firebase writes) are not expected to succeed in CI unless specifically mocked. E2E tests should verify that error handling works when backend calls fail.
 
+**Advanced:**
+- Cypress E2E tests can now simulate pending approval and disallowed domain states by setting `window.__eaglepass_test_approval` and `window.__eaglepass_test_disallowed` flags in test mode. These scenarios are covered in `app.cy.ts`.
+
 ```typescript
 // Example: Authenticated test (no login needed)
 it('should show pass lifecycle page when authenticated', () => {

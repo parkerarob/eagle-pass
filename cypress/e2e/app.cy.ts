@@ -38,3 +38,35 @@ describe("App Authenticated State", () => {
     cy.get('[data-cy="student-id-input"]').should("be.visible");
   });
 });
+
+describe("App User State Edge Cases", () => {
+  it("should show pending approval page if user is pending", () => {
+    // Simulate pending approval by stubbing getUserApprovalStatus to return 'pending'
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.eval(`
+          window.Cypress = true;
+          window.__eaglepass_test_approval = 'pending';
+        `);
+      },
+    });
+    cy.contains("Account Pending Approval").should("be.visible");
+    cy.get('[data-cy="pending-approval-msg"]').should("be.visible");
+  });
+
+  it("should show error if user has disallowed domain", () => {
+    // Simulate disallowed domain by stubbing signInWithGoogle to throw
+    cy.visit("/", {
+      onBeforeLoad(win) {
+        win.eval(`
+          window.Cypress = true;
+          window.__eaglepass_test_disallowed = true;
+        `);
+      },
+    });
+    // Simulate clicking sign in and expect error
+    cy.contains("Sign in with Google").click();
+    cy.get('[data-cy="auth-error-msg"]').should("be.visible");
+    cy.contains("Your email domain is not allowed").should("be.visible");
+  });
+});

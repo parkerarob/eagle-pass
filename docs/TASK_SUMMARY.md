@@ -41,6 +41,7 @@ E2E test coverage: Complete user flows
 - Basic Firebase integration
 - Initial components (CheckInButton, PassForm, ReturnButton)
 - Authentication setup started
+- Google SSO integration (domain restriction, error handling, pending approval, admin user management, E2E and unit tests) ✅
 
 ### 🔄 In Progress
 - Pass service implementation (~29% tested)

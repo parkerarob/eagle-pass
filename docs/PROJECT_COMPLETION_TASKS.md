@@ -1,17 +1,45 @@
 # Eagle Pass Project Completion Task List
 
+## Task Execution Process (How to Work Through This List)
+
+For **every task or subtask** below, follow this process:
+
+1. **Read the requirements** for the task/subtask.
+2. **Plan your approach** (what files, what tests, what docs).
+3. **Write the code** (implement the feature/fix).
+4. **Write or update tests** (unit, integration, E2E as needed).
+5. **Run all tests** (unit, E2E, lint, type checks).
+6. **Update documentation** (this file, TASK_SUMMARY.md, technical/user docs, E2E guide, etc.).
+7. **Commit with a descriptive message** (see commit format in Quickstart/Workflow docs).
+8. **Push your changes** to GitHub.
+9. **Mark the task/subtask as complete** in this file and update TASK_SUMMARY.md.
+
+**Checklist for each task/subtask:**
+- [ ] Requirements read
+- [ ] Plan written
+- [ ] Code implemented
+- [ ] Tests written/updated
+- [ ] All tests passing
+- [ ] Documentation updated
+- [ ] Commit & push
+- [ ] Task marked complete
+
+**References:**
+- [AI Agent Quick Start Guide](./AI_AGENT_QUICKSTART.md)
+- [AI Agent Workflow](./AI_AGENT_WORKFLOW.md)
+
 ## Overview
 This document outlines all tasks required to complete the Eagle Pass digital hall pass system, including implementation, testing (80% coverage target), E2E testing, and deployment preparation.
 
 ## 1. Core Functionality Implementation
 
 ### 1.1 Authentication & User Management
-- [ ] **Complete Google SSO Integration**
-  - [ ] Implement domain restriction for school email domains
-  - [ ] Add error handling for authentication failures
-  - [ ] Create pending approval page for unknown users
-  - [ ] Add user role assignment interface for admins
-  - [ ] Test authentication flow across all user types
+- [x] **Complete Google SSO Integration** ✅ [DONE]
+  - [x] Implement domain restriction for school email domains
+  - [x] Add error handling for authentication failures
+  - [x] Create pending approval page for unknown users
+  - [x] Add user role assignment interface for admins
+  - [x] Test authentication flow across all user types
 
 - [ ] **User Profile Management**
   - [ ] Create user profile components
