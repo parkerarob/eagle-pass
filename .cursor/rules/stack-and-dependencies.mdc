@@ -1,5 +1,71 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: 
+globs: 
+alwaysApply: true
 ---
+# Application Stack and Major Dependencies
+
+This rule documents the core technology stack, major dependencies, and best practices for the EaglePass project. Use this as a reference for onboarding, upgrades, and dependency management.
+
+## Core Stack
+
+- **React**: ^19.1.0
+  - Modern, concurrent React with hooks and functional components.
+- **React DOM**: ^19.1.0
+- **TypeScript**: ~5.8.3
+  - Strong typing for maintainability and scalability.
+- **Vite**: ^7.0.0
+  - Fast dev server and build tool for modern web apps.
+- **Tailwind CSS**: ^4.1.11
+  - Utility-first CSS framework for rapid UI development.
+- **Firebase**: ^11.9.1
+  - Authentication and real-time database.
+
+## UI & Styling
+- **lucide-react**: ^0.525.0 — Icon library
+- **class-variance-authority**: ^0.7.1 — Utility for managing Tailwind variants
+- **clsx**: ^2.1.1 — Conditional classNames
+- **tailwind-merge**: ^3.3.1 — Merges Tailwind classes
+- **shadcn-ui**: ^0.9.5 — UI component library
+- **tw-animate-css**: ^1.3.4 — Animation utilities for Tailwind
+
+## Testing
+- **Jest**: ^30.0.3 — Unit testing
+- **@testing-library/react**: ^16.3.0 — React component testing
+- **@testing-library/jest-dom**: ^6.6.3 — Custom DOM matchers
+- **@testing-library/user-event**: ^14.6.1 — Simulate user events
+- **Cypress**: ^14.5.0 — End-to-end testing
+
+## Linting & Formatting
+- **ESLint**: ^9.29.0 — Linting for JS/TS
+- **eslint-plugin-react-hooks**: ^5.2.0 — Enforces React hook rules
+- **eslint-plugin-react-refresh**: ^0.4.20 — Fast refresh support
+- **Prettier**: ^3.6.2 — Code formatting
+- **prettier-plugin-tailwindcss**: ^0.6.13 — Sorts Tailwind classes
+- **lint-staged**: ^16.1.2 — Runs linters on staged files
+- **husky**: ^9.1.7 — Git hooks
+
+## Build & Tooling
+- **@vitejs/plugin-react**: ^4.5.2 — React support for Vite
+- **postcss**: ^8.5.6 — CSS processing
+- **autoprefixer**: ^10.4.21 — Vendor prefixing for CSS
+
+## TypeScript Support
+- **@types/react**: ^19.1.8
+- **@types/react-dom**: ^19.1.6
+- **ts-jest**: ^29.4.0 — Jest + TypeScript
+- **ts-node**: ^10.9.2 — Run TS files directly
+- **typescript-eslint**: ^8.34.1 — ESLint for TypeScript
+
+## Best Practices & Remarks
+- **React 19**: Use new features (e.g., useOptimistic, useActionState) where appropriate, but ensure all dependencies are compatible with React 19.
+- **TypeScript**: Keep types up to date, leverage strict mode for best safety.
+- **Vite**: Use Vite's fast refresh and optimized build for local development.
+- **Tailwind 4**: Use the new features and improved performance; keep config files in sync with Tailwind updates.
+- **Firebase**: Store config in environment variables, avoid committing secrets.
+- **Testing**: Maintain high coverage with both unit (Jest) and E2E (Cypress) tests. Use mocks for Firebase in unit tests.
+- **Linting/Formatting**: Enforce linting and formatting on pre-commit using Husky and lint-staged.
+- **Upgrade Strategy**: Regularly check for breaking changes in major dependencies, especially React, Vite, Tailwind, and Firebase.
+
+## See Also
+- [directory-structure.mdc](mdc:.cursor/rules/directory-structure.mdc) for file/folder organization.

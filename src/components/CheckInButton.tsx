@@ -14,12 +14,14 @@ export function CheckInButton({ onCheckIn, disabled }: CheckInButtonProps) {
         onChange={(e) => setLocationId(e.target.value)}
         className="input"
         placeholder="Location ID"
+        data-cy="checkin-location-input"
       />
       <button
         type="button"
         className="btn btn-secondary"
         disabled={disabled || !locationId}
         onClick={() => onCheckIn(locationId)}
+        data-cy="checkin-button"
       >
         Check In
       </button>

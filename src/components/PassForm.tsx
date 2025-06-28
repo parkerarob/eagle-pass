@@ -29,6 +29,8 @@ export function PassForm({ onSubmit }: PassFormProps) {
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
             className="input"
+            placeholder="Student ID"
+            data-cy="student-id-input"
             required
           />
         </label>
@@ -40,6 +42,8 @@ export function PassForm({ onSubmit }: PassFormProps) {
             value={originLocationId}
             onChange={(e) => setOriginLocationId(e.target.value)}
             className="input"
+            placeholder="Origin Location"
+            data-cy="origin-location-input"
             required
           />
         </label>
@@ -51,6 +55,7 @@ export function PassForm({ onSubmit }: PassFormProps) {
             value={type}
             onChange={(e) => setType(e.target.value as Pass["type"])}
             className="input"
+            data-cy="pass-type-select"
           >
             <option value="restroom">Restroom</option>
             <option value="parking">Parking Lot</option>

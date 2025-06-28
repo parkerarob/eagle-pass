@@ -10,6 +10,7 @@ export function ReturnButton({ onReturn, disabled }: ReturnButtonProps) {
       className="btn btn-success"
       disabled={disabled}
       onClick={onReturn}
+      data-cy="return-button"
     >
       Return to Origin
     </button>
