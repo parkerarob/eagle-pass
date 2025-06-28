@@ -83,7 +83,7 @@ Current test coverage: ~24.5% (Target: 80%)
 To run Cypress tests in headless mode:
 
 ```bash
-npm run cypress:run
+npx cypress run
 ```
 
 To open the Cypress Test Runner for interactive testing:
@@ -91,6 +91,10 @@ To open the Cypress Test Runner for interactive testing:
 ```bash
 npx cypress open
 ```
+
+**Note:**
+- Authentication is automatically bypassed in test mode (Cypress), so E2E tests always run as a mock user ("Test User"). No special setup is needed for authentication in E2E tests.
+- All E2E tests use robust `data-cy` selectors for stability. Avoid using placeholder or CSS selectors in new tests.
 
 ## Documentation
 

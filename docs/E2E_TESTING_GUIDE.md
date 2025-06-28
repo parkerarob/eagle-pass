@@ -111,23 +111,20 @@ cy.get('[data-cy="user-greeting"]').should('contain', 'Welcome');
 
 ## Authentication Testing
 
-Since our app requires authentication, we handle this in tests by:
+Our app now automatically bypasses authentication in test mode (when running under Cypress). This means:
 
-1. **Skipping authenticated tests** until auth mocking is implemented
-2. **Testing the auth flow** without actually signing in
-3. **Planning for mock authentication** in future iterations
+1. **No manual login or auth mocking is needed** for E2E tests.
+2. **Tests always run as a mock user** ("Test User") when Cypress is detected.
+3. **You can test authenticated flows and UI directly** in E2E tests.
+
+**Note:** Backend operations (like Firebase writes) are not expected to succeed in CI unless specifically mocked. E2E tests should verify that error handling works when backend calls fail.
 
 ```typescript
-// Current approach - skip authenticated tests
-it.skip('should show pass lifecycle page when authenticated', () => {
-  // TODO: Implement auth mocking
-});
-
-// Future approach - with auth mocking
+// Example: Authenticated test (no login needed)
 it('should show pass lifecycle page when authenticated', () => {
-  cy.mockAuth({ user: { email: 'test@example.com' } });
   cy.visit('/');
-  cy.get('[data-cy="pass-form"]').should('be.visible');
+  cy.contains('Pass Lifecycle Demo').should('be.visible');
+  cy.get('[data-cy="student-id-input"]').should('be.visible');
 });
 ```
 
