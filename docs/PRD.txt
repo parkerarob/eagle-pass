@@ -1,0 +1,236 @@
+# **EaglePass – Digital Hall Pass System**  
+*Functional Requirements (concise) – Rev 06 / 26 / 2025*
+
+---
+
+## 1  Pass Lifecycle
+| Step | Condition | Result |
+|------|-----------|--------|
+| **Start** | Student leaves scheduled location | `open out` leg (destination declared) |
+| **Check-in** | Location ≠ scheduled | `open in` leg (pass stays open) |
+| **Return** | Location = scheduled | `closed in` → pass ends |
+| **Restroom** | Special exception (see below) | Must return to location left from |
+| **Parking Lot** | Staff/Admin issued only | No student initiation |
+
+*Exactly **one active pass** per student.*
+
+**Detailed Pass Movement Rules:**
+- Every pass consists of a strict sequence of paired actions: an **out** (declaring the next destination) and an **in** (arriving at a location).
+- The pass remains **open** until the student checks **in** at their scheduled/origin location, at which point the pass is closed and archived.
+- At any non-origin location, after checking in, the student must declare their next destination with an **out** action. The next valid **in** action can be:
+  1. **At the declared destination** (student stays at the new location; pass remains open/in at that location).
+  2. **At the scheduled/origin location** (student returns to class; pass closes and is archived).
+  3. **At the location they just left** (for immediate return trips, e.g., running an errand and returning to sender; pass remains open/in at the previous location).
+- The student may never "out" to the same location they are currently "in" at.
+- For the first leg (leaving the scheduled location), only options 1 and 2 apply (option 3 is redundant).
+- This model allows for multi-stop trips, quick errands, and ensures every movement is intentional, tracked, and accountable.
+
+**Restroom Exception:**
+- If a student submits an **out** to the restroom, they must return to the location they left from (the current location at the time of restroom out).
+- The only valid check-in after a restroom out is at that same location.
+- If that location is the scheduled location, the pass closes on return; otherwise, the pass remains open/in at that location.
+- Students cannot check in at the restroom or any other location while on a restroom pass.
+
+**Business Logic (Simplified):**
+- The UI is responsible for presenting only valid "out" and "in" options to the user at each stage of the pass lifecycle.
+- The backend (business logic) enforces only the following core rules as a safety net:
+  - A pass is a sequence of out/in pairs.
+  - A pass remains open until the student checks in at their scheduled/origin location, at which point it closes.
+  - A student cannot out to the location they are currently in.
+  - For restroom passes, the only valid in is at the location left from.
+- All other logic (e.g., immediate return, multi-stop trips) is handled by the UI presenting only valid options.
+- The backend validates every action to prevent tampering or misuse, but relies on the UI to guide users through only legal moves.
+
+---
+
+## 2  Logging
+- **Immutable legs**: `timestamp, passId, studentId, locationId, actorId, direction, legNumber`  
+- **Durations** calculated at query time
+
+---
+
+## 3  Escalations
+| Level | Default | Notify |
+|-------|---------|--------|
+| `durationWarning` | 10 min | student, origin staff, current staff |
+| `durationAlert`   | 20 min | + admin |
+
+*Thresholds configurable (global / location / student).*
+
+---
+
+## 4  Location Responsibility
+```json
+location = {
+  locationId,
+  staffAssignments: [
+    { staffId, role, periods[] | null, isPrimary? }
+  ],
+  shared: true | false
+}
+```
+Staff may override location per period; planning periods can block passes.
+
+---
+
+## 5  Student Schedule
+```json
+periodAssignment = { periodId, staffId }
+```
+Location resolved via staff's period location.  
+Edits forward-only; all changes logged.
+
+---
+
+## 6  Permission Hierarchy
+**Admin > Group Pass > Location > Student** (most restrictive wins)  
+Modes: **allow · require approval · block**
+
+---
+
+## 7  Groups & Group Passes
+- Positive / negative groups created by staff/admin  
+- Group pass overrides location/student rules unless an admin block exists  
+- Admin settings: auto-approve · pre-approve · notifications · cancel
+
+---
+
+## 8  Roles & Capabilities
+| Role | Key Actions |
+|------|-------------|
+| **Student** | Create / check-in / return; view own history |
+| **Teacher / Support** | Issue passes; override in own location; create groups; force "returned"; flag "Found w/o Pass"; full reporting |
+| **Admin** | Full CRUD; global settings; force-close; manage roles, groups, schedules; view/export logs |
+
+---
+
+## 9  Authentication
+- **Google SSO** (MVP) – domain-restricted  
+- Architecture ready for Microsoft SSO & email/password  
+- Unknown users → pending page → admin approval  
+- **Multi-role support** (e.g., admin + teacher)
+
+---
+
+## 10  Reporting
+- All staff: full reporting & CSV/Sheets export  
+- Pre-built filters: **Frequent Flyers · Stall Sitters · Period Heatmaps**  
+- Export warning re: PII
+
+---
+
+## 11  Data Import / Sync
+- Bulk CSV/Sheet for students, staff, locations, schedules  
+- Manual UI edits **+ optional REST API sync**  
+- Period change → auto force-close (unless `extendThroughPeriod`)  
+- Historical logs *immutable*
+
+---
+
+## 12  FERPA & Security
+- Role-based access; audit log of all actions  
+- Only users with legitimate educational interest may view student data  
+- Email alerts exclude PII; detailed data only in secure UI  
+- Data retention per district policy; deletion only by admin  
+- "Found w/o Pass" and all overrides recorded for audit
+
+---
+
+## 13  App Definition
+**Name:** **EaglePass**  
+**Tagline:** *"Simple, transparent student movement."*
+
+---
+
+## 14  Tech Stack
+| Layer | Choice | Rationale |
+|-------|--------|-----------|
+| **Frontend** | React (TypeScript) with Vite, PWA-ready; Tailwind CSS & shadcn/ui | Fast DX, easy theming, offline-capable |
+| **Backend** | Firebase (Cloud Firestore, Cloud Functions, Auth) | Serverless scale; tight SSO integration |
+| **Realtime** | Firestore listeners | Live dashboards without polling |
+| **Hosting / CDN** | Firebase Hosting + Cloudflare proxy | Global edge caching |
+| **Analytics** | BigQuery export + Data Studio templates | District-level insights |
+| **Mobile** | Installable PWA | Single codebase, app-store presence (React Native wrapper is a future consideration) |
+
+---
+
+## 15  Database Schema (Firestore collections)
+- `passes/{id}` → summary doc (studentId, status, openedAt, closedAt)  
+- `legs/{passId}/{legId}` → immutable leg docs  
+- `students/{id}` · `staff/{id}` · `locations/{id}` · `groups/{id}` · `schedules/{term}`  
+- Composite indexes: `(studentId,status)` and `(locationId,openedAt)` for heatmaps
+
+---
+
+## 16  API Integrations
+| Type | Purpose | Status |
+|------|---------|--------|
+| **OIDC (SSO)** | Google Workspace ↔ Auth | MVP |
+| **OneRoster v1.2** | Roster import from any SIS | v1 |
+| **Clever / ClassLink** | Optional auto-sync | Backlog |
+| **Webhook / Events** | Push escalations to Slack, Teams, SMS | v1 |
+| **District SFTP** | Nightly CSV drop for schools without API | Fallback |
+
+---
+
+## 17  Design Style
+- **Mobile-first**, 100 % PWA; WCAG 2.1 AA contrast  
+- **Color-coded states** (green → yellow → red) mirror escalation timers  
+- Simple card-based layout; large touch targets ≥ 48 px  
+- Consistent lucide-react icons; motion fades for state changes  
+- Dark-mode by default; respects OS preference
+
+---
+
+## 18  Out-of-Scope (Won't Build)
+- Bluetooth/iBeacon or CCTV location tracking  
+- Nurse, counseling or visitor-management modules  
+- Tardy slips & discipline consequence automation  
+- In-house payment processing or fee collection  
+- Hardware badge scanners / kiosks (integrate via API if district supplies)  
+- Parent messaging portal (handled by SIS)
+
+---
+
+## 19  Competitive Snapshot (MVP vs. Market Leaders)
+
+| Feature | **Securly Pass** | **Campus Workflow Suite** | **EaglePass (MVP)** |
+|---------|------------------|---------------------------|---------------------|
+| Daily & location pass limits | ✅ Built-in limits & "meet-up" blocks | ⚠️ Custom rules | ✅ Configurable thresholds |
+| Live dashboard | ✅ Auto-updating | ✅ Hall monitor view | ✅ Firestore realtime |
+| Appointment passes | ✅ Schedule & notify | ⚠️ Via attendance module | ⬜ Planned post-MVP |
+| Badge/kiosk scans | ⚙️ Kiosk mode only | ✅ ID badges & kiosks | ⬜ API hooks only |
+| SIS integration | ✅ Auto-provision SIS | ✅ Native (Infinite Campus) | ✅ OneRoster/Clever |
+| Lock-down "freeze all passes" | 🚫 Not listed | 🚫 Not listed | ✅ Global *Pass Freeze* toggle |
+| Pricing model | Per-student SaaS | Add-on to IC SIS | Flat-tier SaaS / site license |
+
+**Differentiators**  
+1. **Open data export** (BigQuery) without extra fees  
+2. **Code-enforced FERPA masking** in exports  
+3. **Pass Freeze** & period auto-close baked into lifecycle  
+4. Lightweight PWA—runs on any device, no dedicated kiosks
+
+---
+
+## 20  Next Research Items
+1. **Appointment Pass UX** – study Securly's flow for friction points  
+2. **Barcode kiosk-less scans** (QR in PWA) to match Campus Workflow strength  
+3. **Behavioral analytics** – evaluate anomaly-detection APIs for frequent flyers
+
+---
+
+## 21 Testing Strategy
+To ensure the quality, security, and FERPA compliance of EaglePass, a multi-faceted testing strategy will be employed:
+
+### Unit and Component Testing
+- **Purpose:** To verify the correctness of individual functions, React components, and small modules in isolation. This helps in early bug detection and ensures each part of the application behaves as expected.
+- **Tools:**
+    - **Jest:** A JavaScript testing framework for running unit tests.
+    - **React Testing Library:** Used for testing React components in a way that simulates user interactions, promoting robust and maintainable tests.
+
+### End-to-End (E2E) Testing
+- **Purpose:** To validate the entire application flow from a user's perspective, including interactions between the frontend, backend, and authentication systems. This is critical for verifying complex workflows, role-based access controls, and FERPA compliance across the system.
+- **Tool:**
+    - **Cypress:** A fast, reliable, and user-friendly E2E testing framework that executes tests directly in a browser environment.
+
+This strategy will ensure comprehensive test coverage, allowing us to build with confidence and maintain high standards for security and data privacy.

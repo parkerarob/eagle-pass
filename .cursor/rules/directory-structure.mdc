@@ -1,0 +1,58 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Directory Structure and Important Files
+
+This rule documents the main source files and folders in the EaglePass project, providing guidance for navigation and onboarding.
+
+## Top-Level Structure
+
+- `src/` — Main source code for the application
+  - `App.tsx`, `App.test.tsx` — Main app component and its test
+  - `main.tsx` — Entry point
+  - `firebase.ts` — Firebase configuration and initialization
+  - `setupTests.mjs` — Test setup file
+  - `index.css`, `App.css` — Global and app-specific styles
+  - `vite-env.d.ts` — Vite environment types
+  - `assets/` — Static assets (e.g., `react.svg`)
+  - `components/` — React components (currently empty)
+  - `context/` — React context providers (currently empty)
+  - `hooks/` — Custom React hooks (currently empty)
+  - `lib/` — Shared library code (e.g., `utils.ts`)
+  - `pages/` — Page-level components (e.g., `AuthPage.tsx`, `AuthPage.test.tsx`)
+  - `services/` — Service logic (e.g., `auth.ts`, `auth.test.ts`)
+  - `utils/` — Utility/helper functions (currently empty)
+
+- `cypress/` — End-to-end testing with Cypress
+  - `cypress.config.ts` — Cypress configuration
+  - `e2e/` — E2E test files (including examples and app-specific tests)
+  - `fixtures/` — Test fixture data (e.g., `users.json`, `profile.json`)
+  - `support/` — Cypress support files (e.g., `commands.ts`, `e2e.ts`)
+  - `screenshots/`, `downloads/` — Output directories for Cypress
+
+- `__mocks__/` — Jest and service mocks for testing
+  - `@firebase/` — Firebase-related mocks
+  - `services/` — Service mocks
+  - `fileMock.js`, `firebase.js`, `App.js` — Miscellaneous mocks
+
+- `public/` — Static files served by the app (e.g., `vite.svg`)
+
+- `.husky/` — Git hooks for linting, pre-commit, etc.
+
+- Configuration and meta files:
+  - `package.json`, `package-lock.json` — NPM dependencies and scripts
+  - `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` — TypeScript configs
+  - `postcss.config.js`, `tailwind.config.js` — CSS and Tailwind configs
+  - `vite.config.ts` — Vite build config
+  - `eslint.config.js` — ESLint config
+  - `.gitignore`, `.prettierignore` — Ignore rules
+  - `README.md`, `ROADMAP.md`, `GEMINI.md` — Documentation
+  - `components.json` — Component metadata
+
+## Notes
+- Empty folders (`components/`, `context/`, `hooks/`, `utils/`) are placeholders for future code.
+- All tests (unit and E2E) are separated into their respective folders for clarity.
+- Mocks are organized under `__mocks__/` for easy test configuration.
+- Configuration files are at the root for easy access and tooling compatibility.

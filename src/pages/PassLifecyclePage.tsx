@@ -1,0 +1,76 @@
+import React, { useState } from 'react';
+import { PassForm } from '../components/PassForm';
+import { CheckInButton } from '../components/CheckInButton';
+import { ReturnButton } from '../components/ReturnButton';
+import { createPass, checkIn, returnPass } from '../services/pass';
+import type { Pass } from '../services/pass.types';
+
+export default function PassLifecyclePage() {
+  const [pass, setPass] = useState<Pass | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleCreatePass = async (data: { studentId: string; originLocationId: string; type?: Pass['type'] }) => {
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const newPass = await createPass(data.studentId, data.originLocationId, 'staff1', data.type);
+      setPass(newPass);
+      setMessage('Pass created successfully!');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckIn = async (locationId: string) => {
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    try {
+      if (!pass) return;
+      await checkIn(pass.id, locationId, 'staff1');
+      setMessage('Checked in successfully!');
+      setPass({ ...pass, currentLocationId: locationId });
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReturn = async () => {
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    try {
+      if (!pass) return;
+      const closedPass = await returnPass(pass.id, 'staff1');
+      setPass(closedPass);
+      setMessage('Pass returned and closed!');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-md mx-auto p-4 space-y-6">
+      <h1 className="text-2xl font-bold">Pass Lifecycle Demo</h1>
+      {!pass || (pass.status && pass.status === 'closed') ? (
+        <PassForm onSubmit={handleCreatePass} />
+      ) : (
+        <>
+          <CheckInButton onCheckIn={handleCheckIn} disabled={loading || pass.status === 'closed'} />
+          <ReturnButton onReturn={handleReturn} disabled={loading || pass.status === 'closed'} />
+        </>
+      )}
+      {message && <div className="text-green-600" data-cy="success-msg">{message}</div>}
+      {error && <div className="text-red-600" data-cy="error-msg">{error}</div>}
+    </div>
+  );
+} 

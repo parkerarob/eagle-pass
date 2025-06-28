@@ -1,14 +1,31 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  type User
+} from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+  query,
+  where,
+  updateDoc
+} from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyBRvcXezwE7pZl71CrLR-CoMHc7ljbZPJE",
+  authDomain: "eaglepass-dev.firebaseapp.com",
+  projectId: "eaglepass-dev",
+  storageBucket: "eaglepass-dev.firebasestorage.app",
+  messagingSenderId: "218859983940",
+  appId: "1:218859983940:web:664723b95728ba7efa9811"
 };
 
 // Initialize Firebase
@@ -16,4 +33,27 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, db };
+export {
+  // Core instances
+  app,
+  auth,
+  db,
+  // Auth
+  getAuth,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  // Firestore
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+  query,
+  where,
+  updateDoc,
+  // Types
+};
+export type { User };

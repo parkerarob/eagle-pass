@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# CI/CD Workflow – GitHub Actions
+
+This rule explains the continuous integration and delivery setup for EaglePass so future AI agents (and humans) can extend or debug the pipeline confidently.
+
+## Workflow File
+- Located at `.github/workflows/ci.yml`.
+- Triggers on every `push` to `main` and on `pull_request` to any branch.
+
+### Job Steps
+| Step | Purpose |
+|------|---------|
+| **checkout** | Fetch repo code. |
+| **setup-node** | Node 20 with npm cache. |
+| **npm ci** | Install locked dependencies. |
+| **npm run lint** | ESLint code quality gate. |
+| **npm run build** | Type-check (`tsc`) and Vite production build. |
+| **npm test -- --coverage** | Jest unit + component tests, generates coverage. |
+| **cypress-io/github-action** | Runs Cypress E2E suite against local dev server (Vite). |
+| **Codecov upload** | Optional coverage reporting if `CODECOV_TOKEN` secret exists. |
+
+## Extending the Pipeline
+- **Add jobs** for deploy (Firebase Hosting) by creating `.github/workflows/deploy.yml`.
+- **Matrix builds**: duplicate `runs-on` to test Node 18 vs 20 if needed.
+- **Fail-fast rules**: keep ESLint and tests as separate steps so failures surface quickly.
+
+## Local Reproduction
+```bash
+npm ci
+npm run lint
+npm run build
+npm test
+npx cypress run
+```
+
+## Best Practices
+1. Keep CI under 10 min by caching Cypress & Vite.  
+2. All new tests must run green in CI before merge.  
+3. Update this rule when adding steps (e.g., deploy, storybook build).  
+4. When introducing secrets, reference them via GitHub **Actions secrets**, never hard-code.  
+5. Keep local Firebase CLI (`firebase-tools`) up to date with `npm install -g firebase-tools@latest`.
