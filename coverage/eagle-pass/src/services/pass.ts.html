@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.06% </span>
+                <span class="strong">29.47% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>50/172</span>
+                <span class='fraction'>51/173</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.06% </span>
+                <span class="strong">29.47% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>50/172</span>
+                <span class='fraction'>51/173</span>
             </div>
         
             
@@ -356,7 +356,8 @@
 <a name='L291'></a><a href='#L291'>291</a>
 <a name='L292'></a><a href='#L292'>292</a>
 <a name='L293'></a><a href='#L293'>293</a>
-<a name='L294'></a><a href='#L294'>294</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -382,7 +383,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -476,8 +476,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -649,7 +647,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Pass service logic will be re-implemented from scratch.
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">// Pass service logic will be re-implemented from scratch.
 &nbsp;
 import type { Pass } from './pass.types';
 import { db, collection, query, where, getDocs, addDoc, setDoc, doc } from '../firebase';
@@ -678,12 +680,11 @@ function isPassOpen(pass: Pass): boolean {
 &nbsp;
 /**
  * Check if the student can "out" to the given destination from their current location.
- * @param pass - The pass object
  * @param currentLocation - The student's current location
  * @param nextDestination - The proposed next destination
  * @returns True if the out action is valid
  */
-function canOutTo(pass: Pass, currentLocation: string, nextDestination: string): boolean {
+function canOutTo(currentLocation: string, nextDestination: string): boolean {
   // Cannot out to the current location
   return currentLocation !== nextDestination;
 }
@@ -767,13 +768,11 @@ export async function createPass(
  * Declare the next destination (OUT action).
  * @param passId - The pass ID
  * @param nextDestination - The location the student is going to
- * @param passType - Optional: type of pass for special cases
  * @returns Updated pass state or error
  */
 export async function out(
   passId: string,
-  nextDestination: string,
-  passType?: Pass['type']
+  nextDestination: string
 ): Promise&lt;Pass&gt; {
   // 1. Fetch the pass
   const passDocRef = doc(db, 'passes', passId);
@@ -786,7 +785,7 @@ export async function out(
 <span class="cstat-no" title="statement not covered" >  }</span>
   // 3. Validate the OUT action
   const currentLocation = pass.<span class="branch-0 cbranch-no" title="branch not covered" >currentLocationId || pass.originLocationId;</span>
-  if (!canOutTo(pass, currentLocation, nextDestination)) {
+  if (!canOutTo(currentLocation, nextDestination)) {
     throw new Error('Cannot out to the current location or invalid destination');
 <span class="branch-0 cbranch-no" title="branch not covered" >  }</span>
   // 4. Record the new out leg
@@ -929,7 +928,7 @@ export async function out(
 <span class="cstat-no" title="statement not covered" >  const pass = passSnap.docs[0].data() as Pass;</span>
 <span class="cstat-no" title="statement not covered" >  if (actionType === 'out') {</span>
 <span class="cstat-no" title="statement not covered" >    const currentLocation = pass.currentLocationId || pass.originLocationId;</span>
-<span class="cstat-no" title="statement not covered" >    return canOutTo(pass, currentLocation, targetLocation);</span>
+<span class="cstat-no" title="statement not covered" >    return canOutTo(currentLocation, targetLocation);</span>
 <span class="cstat-no" title="statement not covered" >  } else {</span>
 <span class="cstat-no" title="statement not covered" >    if (pass.type === 'restroom') {</span>
 <span class="cstat-no" title="statement not covered" >      return isValidRestroomReturn(pass, targetLocation);</span>
@@ -942,14 +941,18 @@ export async function out(
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export async function isStaffOrAdmin(): Promise&lt;boolean&gt; {</span></span>
   // TODO: Implement role check (stub: always true for now)
 <span class="cstat-no" title="statement not covered" >  return true;</span>
-<span class="cstat-no" title="statement not covered" >} </span></pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >}</span>
+&nbsp;
+// Export aliases for compatibility with existing component imports
+export const checkIn = inAction;
+export const returnPass = closePass; </pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-28T21:00:38.094Z
+                at 2025-06-28T21:49:35.357Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

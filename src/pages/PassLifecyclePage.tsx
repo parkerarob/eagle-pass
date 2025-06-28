@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { PassForm } from '../components/PassForm';
-import { CheckInButton } from '../components/CheckInButton';
-import { ReturnButton } from '../components/ReturnButton';
-import { createPass, checkIn, returnPass } from '../services/pass';
-import type { Pass } from '../services/pass.types';
+import { useState } from "react";
+import { PassForm } from "../components/PassForm";
+import { CheckInButton } from "../components/CheckInButton";
+import { ReturnButton } from "../components/ReturnButton";
+import { createPass, checkIn, returnPass } from "../services/pass";
+import type { Pass } from "../services/pass.types";
 
 export default function PassLifecyclePage() {
   const [pass, setPass] = useState<Pass | null>(null);
@@ -11,14 +11,24 @@ export default function PassLifecyclePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleCreatePass = async (data: { studentId: string; originLocationId: string; type?: Pass['type'] }) => {
+  const handleCreatePass = async (data: {
+    studentId: string;
+    originLocationId: string;
+    type?: Pass["type"];
+  }) => {
     setLoading(true);
     setError(null);
     setMessage(null);
     try {
-      const newPass = await createPass(data.studentId, data.originLocationId, 'staff1', data.type);
+      const newPass = await createPass(
+        data.studentId,
+        data.originLocationId,
+        "staff1",
+        "library",
+        data.type,
+      );
       setPass(newPass);
-      setMessage('Pass created successfully!');
+      setMessage("Pass created successfully!");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -32,9 +42,9 @@ export default function PassLifecyclePage() {
     setMessage(null);
     try {
       if (!pass) return;
-      await checkIn(pass.id, locationId, 'staff1');
-      setMessage('Checked in successfully!');
-      setPass({ ...pass, currentLocationId: locationId });
+      const updatedPass = await checkIn(pass.id, locationId);
+      setMessage("Checked in successfully!");
+      setPass(updatedPass);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -48,9 +58,9 @@ export default function PassLifecyclePage() {
     setMessage(null);
     try {
       if (!pass) return;
-      const closedPass = await returnPass(pass.id, 'staff1');
-      setPass(closedPass);
-      setMessage('Pass returned and closed!');
+      await returnPass(pass.id);
+      setPass({ ...pass, status: "closed", closedAt: Date.now() });
+      setMessage("Pass returned and closed!");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -59,18 +69,32 @@ export default function PassLifecyclePage() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-6">
+    <div className="mx-auto max-w-md space-y-6 p-4">
       <h1 className="text-2xl font-bold">Pass Lifecycle Demo</h1>
-      {!pass || (pass.status && pass.status === 'closed') ? (
+      {!pass || pass.status === "closed" ? (
         <PassForm onSubmit={handleCreatePass} />
       ) : (
         <>
-          <CheckInButton onCheckIn={handleCheckIn} disabled={loading || pass.status === 'closed'} />
-          <ReturnButton onReturn={handleReturn} disabled={loading || pass.status === 'closed'} />
+          <CheckInButton
+            onCheckIn={handleCheckIn}
+            disabled={loading || (pass as Pass).status === "closed"}
+          />
+          <ReturnButton
+            onReturn={handleReturn}
+            disabled={loading || (pass as Pass).status === "closed"}
+          />
         </>
       )}
-      {message && <div className="text-green-600" data-cy="success-msg">{message}</div>}
-      {error && <div className="text-red-600" data-cy="error-msg">{error}</div>}
+      {message && (
+        <div className="text-green-600" data-cy="success-msg">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="text-red-600" data-cy="error-msg">
+          {error}
+        </div>
+      )}
     </div>
   );
-} 
+}

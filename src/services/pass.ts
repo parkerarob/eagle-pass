@@ -1,7 +1,16 @@
 // Pass service logic will be re-implemented from scratch.
 
-import type { Pass } from './pass.types';
-import { db, collection, query, where, getDocs, addDoc, setDoc, doc } from '../firebase';
+import type { Pass } from "./pass.types";
+import {
+  db,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  setDoc,
+  doc,
+} from "../firebase";
 
 // --- Pass State & Validation Helpers ---
 
@@ -12,7 +21,7 @@ import { db, collection, query, where, getDocs, addDoc, setDoc, doc } from '../f
  */
 function isPassOpen(pass: Pass): boolean {
   // A pass is open if its status is 'open'
-  return pass.status === 'open';
+  return pass.status === "open";
 }
 
 /**
@@ -27,12 +36,11 @@ function isScheduledLocation(pass: Pass, locationId: string): boolean {
 
 /**
  * Check if the student can "out" to the given destination from their current location.
- * @param pass - The pass object
  * @param currentLocation - The student's current location
  * @param nextDestination - The proposed next destination
  * @returns True if the out action is valid
  */
-function canOutTo(pass: Pass, currentLocation: string, nextDestination: string): boolean {
+function canOutTo(currentLocation: string, nextDestination: string): boolean {
   // Cannot out to the current location
   return currentLocation !== nextDestination;
 }
@@ -60,7 +68,7 @@ function canInAt(pass: Pass, locationId: string): boolean {
  */
 function isValidRestroomReturn(pass: Pass, locationId: string): boolean {
   // Restroom exception: must return to the location left from
-  if (pass.type !== 'restroom') return false;
+  if (pass.type !== "restroom") return false;
   return locationId === (pass.currentLocationId || pass.originLocationId);
 }
 
@@ -80,24 +88,30 @@ export async function createPass(
   scheduledLocationId: string,
   issuedBy: string,
   initialDestination: string,
-  passType?: Pass['type']
+  passType?: Pass["type"],
 ): Promise<Pass> {
   // 1. Enforce one active pass per student
-  const passesRef = collection(db, 'passes');
-  const q = query(passesRef, where('studentId', '==', studentId), where('status', '==', 'open'));
+  const passesRef = collection(db, "passes");
+  const q = query(
+    passesRef,
+    where("studentId", "==", studentId),
+    where("status", "==", "open"),
+  );
   const openPasses = await getDocs(q);
   if (!openPasses.empty) {
-    throw new Error('Student already has an active pass');
+    throw new Error("Student already has an active pass");
   }
   // 2. Validate initial destination
   if (scheduledLocationId === initialDestination) {
-    throw new Error('Initial destination cannot be the scheduled/origin location');
+    throw new Error(
+      "Initial destination cannot be the scheduled/origin location",
+    );
   }
   // 3. Create the pass object
   const pass: Pass = {
-    id: '', // will be set after addDoc
+    id: "", // will be set after addDoc
     studentId,
-    status: 'open',
+    status: "open",
     openedAt: Date.now(),
     originLocationId: scheduledLocationId,
     issuedBy,
@@ -116,27 +130,29 @@ export async function createPass(
  * Declare the next destination (OUT action).
  * @param passId - The pass ID
  * @param nextDestination - The location the student is going to
- * @param passType - Optional: type of pass for special cases
  * @returns Updated pass state or error
  */
 export async function out(
   passId: string,
   nextDestination: string,
-  passType?: Pass['type']
 ): Promise<Pass> {
   // 1. Fetch the pass
-  const passDocRef = doc(db, 'passes', passId);
-  const passSnap = await getDocs(query(collection(db, 'passes'), where('id', '==', passId)));
-  if (passSnap.empty) throw new Error('Pass not found');
+  const passDocRef = doc(db, "passes", passId);
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
   const pass = passSnap.docs[0].data() as Pass;
   // 2. Ensure pass is open
   if (!isPassOpen(pass)) {
-    throw new Error('Cannot out: pass is not open');
+    throw new Error("Cannot out: pass is not open");
   }
   // 3. Validate the OUT action
   const currentLocation = pass.currentLocationId || pass.originLocationId;
-  if (!canOutTo(pass, currentLocation, nextDestination)) {
-    throw new Error('Cannot out to the current location or invalid destination');
+  if (!canOutTo(currentLocation, nextDestination)) {
+    throw new Error(
+      "Cannot out to the current location or invalid destination",
+    );
   }
   // 4. Record the new out leg
   const legsRef = collection(db, `legs/${passId}`);
@@ -147,13 +163,17 @@ export async function out(
     studentId: pass.studentId,
     locationId: nextDestination,
     actorId: pass.issuedBy, // or whoever is performing the action
-    direction: 'out',
+    direction: "out",
     legNumber,
     timestamp: Date.now(),
   };
   await setDoc(doc(legsRef, outLeg.legId), outLeg);
   // 5. Update the pass's current location
-  await setDoc(passDocRef, { ...pass, currentLocationId: nextDestination }, { merge: true });
+  await setDoc(
+    passDocRef,
+    { ...pass, currentLocationId: nextDestination },
+    { merge: true },
+  );
   const updatedPass = { ...pass, currentLocationId: nextDestination };
   // 6. Return the updated pass object
   return updatedPass;
@@ -167,24 +187,28 @@ export async function out(
  */
 export async function inAction(
   passId: string,
-  locationId: string
+  locationId: string,
 ): Promise<Pass> {
   // 1. Fetch the pass
-  const passSnap = await getDocs(query(collection(db, 'passes'), where('id', '==', passId)));
-  if (passSnap.empty) throw new Error('Pass not found');
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
   const pass = passSnap.docs[0].data() as Pass;
   // 2. Ensure pass is open
   if (!isPassOpen(pass)) {
-    throw new Error('Cannot check in: pass is not open');
+    throw new Error("Cannot check in: pass is not open");
   }
   // 3. Validate the IN action
-  if (pass.type === 'restroom') {
+  if (pass.type === "restroom") {
     if (!isValidRestroomReturn(pass, locationId)) {
-      throw new Error('Restroom pass: must return to the location you left from');
+      throw new Error(
+        "Restroom pass: must return to the location you left from",
+      );
     }
   } else {
     if (!canInAt(pass, locationId)) {
-      throw new Error('Cannot check in at this location');
+      throw new Error("Cannot check in at this location");
     }
   }
   // 4. Record the new in leg
@@ -196,7 +220,7 @@ export async function inAction(
     studentId: pass.studentId,
     locationId,
     actorId: pass.issuedBy, // or whoever is performing the action
-    direction: 'in',
+    direction: "in",
     legNumber,
     timestamp: Date.now(),
   };
@@ -205,12 +229,17 @@ export async function inAction(
   let updatedPass: Pass;
   if (isScheduledLocation(pass, locationId)) {
     // Close the pass
-    updatedPass = { ...pass, status: 'closed', closedAt: Date.now(), currentLocationId: locationId };
+    updatedPass = {
+      ...pass,
+      status: "closed",
+      closedAt: Date.now(),
+      currentLocationId: locationId,
+    };
   } else {
     // Remain open/in at the new location
     updatedPass = { ...pass, currentLocationId: locationId };
   }
-  await setDoc(doc(db, 'passes', passId), updatedPass, { merge: true });
+  await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
   // 6. Return the updated pass object
   return updatedPass;
 }
@@ -220,28 +249,30 @@ export async function inAction(
  * @param passId - The pass ID
  * @returns Confirmation of closure or error
  */
-export async function closePass(
-  passId: string
-): Promise<void> {
+export async function closePass(passId: string): Promise<void> {
   // 1. Fetch the pass
-  const passSnap = await getDocs(query(collection(db, 'passes'), where('id', '==', passId)));
-  if (passSnap.empty) throw new Error('Pass not found');
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
   const pass = passSnap.docs[0].data() as Pass;
   // 2. Ensure pass is open
   if (!isPassOpen(pass)) {
-    throw new Error('Cannot close pass: pass is not open');
+    throw new Error("Cannot close pass: pass is not open");
   }
   // 3. Ensure the student is at their scheduled/origin location
-  if (!isScheduledLocation(pass, pass.currentLocationId || '')) {
-    throw new Error('Cannot close pass: student is not at their scheduled/origin location');
+  if (!isScheduledLocation(pass, pass.currentLocationId || "")) {
+    throw new Error(
+      "Cannot close pass: student is not at their scheduled/origin location",
+    );
   }
   // 4. Update the pass status to closed
   const updatedPass: Pass = {
     ...pass,
-    status: 'closed',
+    status: "closed",
     closedAt: Date.now(),
   };
-  await setDoc(doc(db, 'passes', passId), updatedPass, { merge: true });
+  await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
   // 5. Return confirmation (void)
   return;
 }
@@ -251,12 +282,12 @@ export async function closePass(
  * @param passId - The pass ID
  * @returns Pass object with current status and history
  */
-export async function getPassStatus(
-  passId: string
-): Promise<Pass> {
+export async function getPassStatus(passId: string): Promise<Pass> {
   // 1. Fetch the pass
-  const passSnap = await getDocs(query(collection(db, 'passes'), where('id', '==', passId)));
-  if (passSnap.empty) throw new Error('Pass not found');
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
   return passSnap.docs[0].data() as Pass;
 }
 
@@ -269,18 +300,20 @@ export async function getPassStatus(
  */
 export async function validateAction(
   passId: string,
-  actionType: 'out' | 'in',
-  targetLocation: string
+  actionType: "out" | "in",
+  targetLocation: string,
 ): Promise<boolean> {
   // 1. Fetch the pass
-  const passSnap = await getDocs(query(collection(db, 'passes'), where('id', '==', passId)));
-  if (passSnap.empty) throw new Error('Pass not found');
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
   const pass = passSnap.docs[0].data() as Pass;
-  if (actionType === 'out') {
+  if (actionType === "out") {
     const currentLocation = pass.currentLocationId || pass.originLocationId;
-    return canOutTo(pass, currentLocation, targetLocation);
+    return canOutTo(currentLocation, targetLocation);
   } else {
-    if (pass.type === 'restroom') {
+    if (pass.type === "restroom") {
       return isValidRestroomReturn(pass, targetLocation);
     }
     return canInAt(pass, targetLocation);
@@ -291,4 +324,8 @@ export async function validateAction(
 export async function isStaffOrAdmin(): Promise<boolean> {
   // TODO: Implement role check (stub: always true for now)
   return true;
-} 
+}
+
+// Export aliases for compatibility with existing component imports
+export const checkIn = inAction;
+export const returnPass = closePass;

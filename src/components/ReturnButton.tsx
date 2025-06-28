@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ReturnButtonProps {
   onReturn: () => void;
   disabled?: boolean;
@@ -16,4 +14,4 @@ export function ReturnButton({ onReturn, disabled }: ReturnButtonProps) {
       Return to Origin
     </button>
   );
-} 
+}

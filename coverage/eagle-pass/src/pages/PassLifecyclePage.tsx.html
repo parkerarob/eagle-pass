@@ -213,7 +213,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState } from 'react';<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState } from 'react';<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >import { PassForm } from '../components/PassForm';</span>
 <span class="cstat-no" title="statement not covered" >import { CheckInButton } from '../components/CheckInButton';</span>
 <span class="cstat-no" title="statement not covered" >import { ReturnButton } from '../components/ReturnButton';</span>
@@ -231,7 +231,7 @@ import type { Pass } from '../services/pass.types';
 <span class="cstat-no" title="statement not covered" >    setError(null);</span>
 <span class="cstat-no" title="statement not covered" >    setMessage(null);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      const newPass = await createPass(data.studentId, data.originLocationId, 'staff1', data.type);</span>
+<span class="cstat-no" title="statement not covered" >      const newPass = await createPass(data.studentId, data.originLocationId, 'staff1', 'library', data.type);</span>
 <span class="cstat-no" title="statement not covered" >      setPass(newPass);</span>
 <span class="cstat-no" title="statement not covered" >      setMessage('Pass created successfully!');</span>
 <span class="cstat-no" title="statement not covered" >    } catch (e: unknown) {</span>
@@ -247,9 +247,9 @@ import type { Pass } from '../services/pass.types';
 <span class="cstat-no" title="statement not covered" >    setMessage(null);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      if (!pass) return;</span>
-<span class="cstat-no" title="statement not covered" >      await checkIn(pass.id, locationId, 'staff1');</span>
+<span class="cstat-no" title="statement not covered" >      const updatedPass = await checkIn(pass.id, locationId);</span>
 <span class="cstat-no" title="statement not covered" >      setMessage('Checked in successfully!');</span>
-<span class="cstat-no" title="statement not covered" >      setPass({ ...pass, currentLocationId: locationId });</span>
+<span class="cstat-no" title="statement not covered" >      setPass(updatedPass);</span>
 <span class="cstat-no" title="statement not covered" >    } catch (e: unknown) {</span>
 <span class="cstat-no" title="statement not covered" >      setError(e instanceof Error ? e.message : String(e));</span>
 <span class="cstat-no" title="statement not covered" >    } finally {</span>
@@ -263,8 +263,8 @@ import type { Pass } from '../services/pass.types';
 <span class="cstat-no" title="statement not covered" >    setMessage(null);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      if (!pass) return;</span>
-<span class="cstat-no" title="statement not covered" >      const closedPass = await returnPass(pass.id, 'staff1');</span>
-<span class="cstat-no" title="statement not covered" >      setPass(closedPass);</span>
+<span class="cstat-no" title="statement not covered" >      await returnPass(pass.id);</span>
+<span class="cstat-no" title="statement not covered" >      setPass({ ...pass, status: 'closed', closedAt: Date.now() });</span>
 <span class="cstat-no" title="statement not covered" >      setMessage('Pass returned and closed!');</span>
 <span class="cstat-no" title="statement not covered" >    } catch (e: unknown) {</span>
 <span class="cstat-no" title="statement not covered" >      setError(e instanceof Error ? e.message : String(e));</span>
@@ -276,12 +276,12 @@ import type { Pass } from '../services/pass.types';
 <span class="cstat-no" title="statement not covered" >  return (</span>
 <span class="cstat-no" title="statement not covered" >    &lt;div className="max-w-md mx-auto p-4 space-y-6"&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;h1 className="text-2xl font-bold"&gt;Pass Lifecycle Demo&lt;/h1&gt;</span>
-<span class="cstat-no" title="statement not covered" >      {!pass || (pass.status &amp;&amp; pass.status === 'closed') ? (</span>
+<span class="cstat-no" title="statement not covered" >      {!pass || pass.status === 'closed' ? (</span>
 <span class="cstat-no" title="statement not covered" >        &lt;PassForm onSubmit={handleCreatePass} /&gt;</span>
       ) : (
 <span class="cstat-no" title="statement not covered" >        &lt;&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;CheckInButton onCheckIn={handleCheckIn} disabled={loading || pass.status === 'closed'} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;ReturnButton onReturn={handleReturn} disabled={loading || pass.status === 'closed'} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;CheckInButton onCheckIn={handleCheckIn} disabled={loading || (pass as Pass).status === 'closed'} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;ReturnButton onReturn={handleReturn} disabled={loading || (pass as Pass).status === 'closed'} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >        &lt;/&gt;</span>
       )}
 <span class="cstat-no" title="statement not covered" >      {message &amp;&amp; &lt;div className="text-green-600" data-cy="success-msg"&gt;{message}&lt;/div&gt;}</span>
@@ -295,7 +295,7 @@ import type { Pass } from '../services/pass.types';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-28T21:00:38.094Z
+                at 2025-06-28T21:49:35.357Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

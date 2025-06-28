@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import { useState } from "react";
 
 interface CheckInButtonProps {
   onCheckIn: (locationId: string) => void;
@@ -7,12 +6,12 @@ interface CheckInButtonProps {
 }
 
 export function CheckInButton({ onCheckIn, disabled }: CheckInButtonProps) {
-  const [locationId, setLocationId] = useState('');
+  const [locationId, setLocationId] = useState("");
   return (
     <div className="flex items-center space-x-2">
       <input
         value={locationId}
-        onChange={e => setLocationId(e.target.value)}
+        onChange={(e) => setLocationId(e.target.value)}
         className="input"
         placeholder="Location ID"
       />
@@ -26,4 +25,4 @@ export function CheckInButton({ onCheckIn, disabled }: CheckInButtonProps) {
       </button>
     </div>
   );
-} 
+}
