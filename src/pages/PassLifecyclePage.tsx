@@ -14,7 +14,10 @@ export default function PassLifecyclePage() {
   const handleCreatePass = async (data: {
     studentId: string;
     originLocationId: string;
+    destinationLocationId: string;
     type?: Pass["type"];
+    isGroup?: boolean;
+    groupStudentIds?: string[];
   }) => {
     setLoading(true);
     setError(null);
@@ -24,8 +27,10 @@ export default function PassLifecyclePage() {
         data.studentId,
         data.originLocationId,
         "staff1",
-        "library",
+        data.destinationLocationId,
         data.type,
+        data.isGroup,
+        data.groupStudentIds,
       );
       setPass(newPass);
       setMessage("Pass created successfully!");

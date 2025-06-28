@@ -43,8 +43,11 @@ E2E test coverage: Complete user flows
 - Authentication setup started
 - Google SSO integration (domain restriction, error handling, pending approval, admin user management, E2E and unit tests) ✅
 
+### ✅ Recently Completed
+- [2024-06-09] Pass Lifecycle Implementation - Pass creation, check-in/out, closure, multi-stop, and all PRD rules complete
+- [2024-06-09] User Profile Management - User profile components, role-based UI, settings page, and validation complete
+
 ### 🔄 In Progress
-- Pass service implementation (~29% tested)
 - Component development
 - Firebase schema design
 

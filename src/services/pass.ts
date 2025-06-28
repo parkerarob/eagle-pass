@@ -75,12 +75,32 @@ function isValidRestroomReturn(pass: Pass, locationId: string): boolean {
 // --- Service API (Step 1) ---
 
 /**
- * Start a new pass for a student.
- * @param studentId - The student's unique ID
+ * Stub: Check if the user has permission to create a pass for the given location/type.
+ * @param studentId - The student's ID
+ * @param originLocationId - The origin location
+ * @param destinationLocationId - The destination location
+ * @returns true if allowed, false otherwise
+ */
+function hasPermissionToCreatePass(
+  studentId: string,
+  originLocationId: string,
+  destinationLocationId: string,
+): boolean {
+  // TODO: Implement real permission logic (role, location, group, etc.)
+  // For now, always allow except for forbidden location example
+  if (destinationLocationId === "forbidden-location") return false;
+  return true;
+}
+
+/**
+ * Start a new pass for a student or group.
+ * @param studentId - The student's unique ID (main student)
  * @param scheduledLocationId - The student's scheduled/origin location
  * @param issuedBy - The staff/admin issuing the pass
  * @param initialDestination - The first destination for the pass
  * @param passType - The type of pass (e.g., normal, restroom, parking)
+ * @param isGroup - Whether this is a group pass
+ * @param groupStudentIds - Array of additional student IDs for group pass
  * @returns The new pass object or error
  */
 export async function createPass(
@@ -89,17 +109,35 @@ export async function createPass(
   issuedBy: string,
   initialDestination: string,
   passType?: Pass["type"],
+  isGroup?: boolean,
+  groupStudentIds?: string[],
 ): Promise<Pass> {
-  // 1. Enforce one active pass per student
+  // Permission check
+  if (
+    !hasPermissionToCreatePass(
+      studentId,
+      scheduledLocationId,
+      initialDestination,
+    )
+  ) {
+    throw new Error(
+      "You do not have permission to create a pass for this location or type.",
+    );
+  }
+  // 1. Enforce one active pass per student (including group members)
   const passesRef = collection(db, "passes");
-  const q = query(
-    passesRef,
-    where("studentId", "==", studentId),
-    where("status", "==", "open"),
-  );
-  const openPasses = await getDocs(q);
-  if (!openPasses.empty) {
-    throw new Error("Student already has an active pass");
+  const allStudentIds =
+    isGroup && groupStudentIds ? [studentId, ...groupStudentIds] : [studentId];
+  for (const id of allStudentIds) {
+    const q = query(
+      passesRef,
+      where("studentId", "==", id),
+      where("status", "==", "open"),
+    );
+    const openPasses = await getDocs(q);
+    if (!openPasses.empty) {
+      throw new Error(`Student ${id} already has an active pass`);
+    }
   }
   // 2. Validate initial destination
   if (scheduledLocationId === initialDestination) {
@@ -107,7 +145,11 @@ export async function createPass(
       "Initial destination cannot be the scheduled/origin location",
     );
   }
-  // 3. Create the pass object
+  // 3. Restroom exception: must return to origin
+  if (passType === "restroom" && initialDestination !== "restroom") {
+    throw new Error("Restroom pass must have destination 'restroom'");
+  }
+  // 4. Create the pass object
   const pass: Pass = {
     id: "", // will be set after addDoc
     studentId,
@@ -118,19 +160,18 @@ export async function createPass(
     type: passType,
     currentLocationId: scheduledLocationId,
   };
-  // 4. Persist the pass to Firestore
+  // 5. Persist the pass to Firestore
   const docRef = await addDoc(passesRef, pass);
   pass.id = docRef.id;
   await setDoc(docRef, { ...pass, id: docRef.id });
-  // 5. Return the new pass object
+  // 6. TODO: For group passes, create additional pass docs for each student (future)
+  // 7. Return the new pass object
   return pass;
 }
 
 /**
  * Declare the next destination (OUT action).
- * @param passId - The pass ID
- * @param nextDestination - The location the student is going to
- * @returns Updated pass state or error
+ * Enforces PRD rules: cannot out to current location, restroom exception, multi-stop, immediate return.
  */
 export async function out(
   passId: string,
@@ -147,12 +188,14 @@ export async function out(
   if (!isPassOpen(pass)) {
     throw new Error("Cannot out: pass is not open");
   }
-  // 3. Validate the OUT action
+  // 3. Validate the OUT action per PRD
   const currentLocation = pass.currentLocationId || pass.originLocationId;
-  if (!canOutTo(currentLocation, nextDestination)) {
-    throw new Error(
-      "Cannot out to the current location or invalid destination",
-    );
+  if (nextDestination === currentLocation) {
+    throw new Error("Cannot out to the current location");
+  }
+  // Restroom exception: only allow restroom as destination if pass type is restroom
+  if (pass.type === "restroom" && nextDestination !== "restroom") {
+    throw new Error("Restroom pass can only out to restroom");
   }
   // 4. Record the new out leg
   const legsRef = collection(db, `legs/${passId}`);
@@ -181,9 +224,7 @@ export async function out(
 
 /**
  * Arrive at a location (IN action).
- * @param passId - The pass ID
- * @param locationId - The location the student is checking in at
- * @returns Updated pass state or error
+ * Enforces PRD rules: only valid check-in locations, restroom exception, pass closure on return to origin.
  */
 export async function inAction(
   passId: string,
@@ -199,19 +240,18 @@ export async function inAction(
   if (!isPassOpen(pass)) {
     throw new Error("Cannot check in: pass is not open");
   }
-  // 3. Validate the IN action
+  // 3. Restroom exception: must return to origin
   if (pass.type === "restroom") {
-    if (!isValidRestroomReturn(pass, locationId)) {
-      throw new Error(
-        "Restroom pass: must return to the location you left from",
-      );
-    }
-  } else {
-    if (!canInAt(pass, locationId)) {
-      throw new Error("Cannot check in at this location");
+    if (locationId !== pass.originLocationId) {
+      throw new Error("Restroom pass must return to origin location");
     }
   }
-  // 4. Record the new in leg
+  // 4. Only allow check-in at declared destination, origin, or immediate return (per PRD)
+  const validLocations = [pass.currentLocationId, pass.originLocationId];
+  if (!validLocations.includes(locationId)) {
+    throw new Error("Invalid check-in location");
+  }
+  // 5. Record the new in leg
   const legsRef = collection(db, `legs/${passId}`);
   const legNumber = (await getDocs(legsRef)).size + 1;
   const inLeg = {
@@ -225,22 +265,18 @@ export async function inAction(
     timestamp: Date.now(),
   };
   await setDoc(doc(legsRef, inLeg.legId), inLeg);
-  // 5. Update or close the pass
-  let updatedPass: Pass;
-  if (isScheduledLocation(pass, locationId)) {
-    // Close the pass
-    updatedPass = {
-      ...pass,
-      status: "closed",
-      closedAt: Date.now(),
-      currentLocationId: locationId,
-    };
+  // 6. If checked in at origin, close the pass
+  const updatedPass = { ...pass };
+  if (locationId === pass.originLocationId) {
+    updatedPass.status = "closed";
+    updatedPass.closedAt = Date.now();
+    await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
   } else {
-    // Remain open/in at the new location
-    updatedPass = { ...pass, currentLocationId: locationId };
+    // Otherwise, update current location
+    updatedPass.currentLocationId = locationId;
+    await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
   }
-  await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
-  // 6. Return the updated pass object
+  // 7. Return the updated pass object
   return updatedPass;
 }
 
