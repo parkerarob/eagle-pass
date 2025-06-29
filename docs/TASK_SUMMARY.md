@@ -40,23 +40,24 @@ E2E test coverage: Complete user flows
 
 ## Current Status
 
+**Test Coverage:** 43%
+
 ### ✅ Completed
 
 - Project setup and configuration
 - Testing framework (Vitest + React Testing Library)
-- Basic Firebase integration
+- Firebase integration
 - Initial components (CheckInButton, PassForm, ReturnButton)
-- Authentication setup started
-- Google SSO with role-based access
-- Basic pass lifecycle implemented (create, check-in/out, close)
-- Schedule management services added
+- Authentication system (Google SSO, role management)
+- Pass lifecycle (create, check-in/out, close)
+- Location and schedule management
+- Escalation and group management
+- Reporting & analytics features
 
 ### 🔄 In Progress
+- UI component development
+- Increase test coverage (current 43%)
 
-- Component development
-- Firebase schema design
-- Authentication & User Management
-- Schedule UI components
 
 ### 📋 Todo (High Priority)
 
