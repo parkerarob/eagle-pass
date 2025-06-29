@@ -60,18 +60,18 @@ This document outlines all tasks required to complete the Eagle Pass digital hal
 
 ### 1.4 Schedule Management
 
-- [ ] **Student Schedules**
-  - [ ] Create schedule upload interface
-  - [ ] Implement period assignment system
-  - [ ] Add schedule editing with forward-only changes
-  - [ ] Create schedule conflict resolution
-  - [ ] Add schedule change logging
+- [x] **Student Schedules** ✅
+  - [x] Create schedule upload interface
+  - [x] Implement period assignment system
+  - [x] Add schedule editing with forward-only changes
+  - [x] Create schedule conflict resolution
+  - [x] Add schedule change logging
 
-- [ ] **Staff Schedules**
-  - [ ] Implement staff period assignments
-  - [ ] Add location resolution via staff schedule
-  - [ ] Create substitute teacher support
-  - [ ] Add planning period management
+- [x] **Staff Schedules** ✅
+  - [x] Implement staff period assignments
+  - [x] Add location resolution via staff schedule
+  - [x] Create substitute teacher support
+  - [x] Add planning period management
 
 ### 1.5 Escalation System
 
