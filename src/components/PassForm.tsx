@@ -1,5 +1,20 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import type { Pass } from "../services/pass.types";
+import { Button } from "./ui/button";
+import { FormProvider } from "react-hook-form";
+import { FormField } from "./FormField";
+
+const schema = z.object({
+  studentId: z.string().min(1, "Student ID is required"),
+  originLocationId: z.string().min(1, "Origin location is required"),
+  destinationId: z.string().min(1, "Destination is required"),
+  groupSize: z.number().min(1, "Group size must be at least 1"),
+  type: z.enum(["regular", "restroom", "parking"]).default("restroom"),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 interface PassFormProps {
   onSubmit: (data: {
@@ -12,96 +27,64 @@ interface PassFormProps {
 }
 
 export function PassForm({ onSubmit }: PassFormProps) {
-  const [studentId, setStudentId] = useState("");
-  const [originLocationId, setOriginLocationId] = useState("");
-  const [destinationId, setDestinationId] = useState("");
-  const [groupSize, setGroupSize] = useState(1);
-  const [type, setType] = useState<Pass["type"]>("restroom");
+  const methods = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      studentId: "",
+      originLocationId: "",
+      destinationId: "",
+      groupSize: 1,
+      type: "restroom",
+    },
+    mode: "onChange",
+  });
+
+  const submit = (data: FormValues) => {
+    onSubmit(data);
+  };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({
-          studentId,
-          originLocationId,
-          destinationId,
-          groupSize,
-          type,
-        });
-      }}
-      className="space-y-4"
-    >
-      <div>
-        <label>
-          Student ID
-          <input
-            value={studentId}
-            onChange={(e) => setStudentId(e.target.value)}
-            className="input"
-            placeholder="Student ID"
-            data-cy="student-id-input"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Origin Location
-          <input
-            value={originLocationId}
-            onChange={(e) => setOriginLocationId(e.target.value)}
-            className="input"
-            placeholder="Origin Location"
-            data-cy="origin-location-input"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Destination
-          <input
-            value={destinationId}
-            onChange={(e) => setDestinationId(e.target.value)}
-            className="input"
-            placeholder="Destination"
-            data-cy="destination-input"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Group Size
-          <input
-            type="number"
-            min={1}
-            value={groupSize}
-            onChange={(e) => setGroupSize(Number(e.target.value))}
-            className="input"
-            data-cy="group-size-input"
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Type
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as Pass["type"])}
-            className="input"
-            data-cy="pass-type-select"
-          >
-            <option value="regular">Regular</option>
-            <option value="restroom">Restroom</option>
-            <option value="parking">Parking Lot</option>
-          </select>
-        </label>
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Create Pass
-      </button>
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(submit)} className="space-y-4">
+        <FormField
+          name="studentId"
+          label="Student ID"
+          placeholder="Student ID"
+          inputProps={{ "data-cy": "student-id-input" }}
+        />
+        <FormField
+          name="originLocationId"
+          label="Origin Location"
+          placeholder="Origin Location"
+          inputProps={{ "data-cy": "origin-location-input" }}
+        />
+        <FormField
+          name="destinationId"
+          label="Destination"
+          placeholder="Destination"
+          inputProps={{ "data-cy": "destination-input" }}
+        />
+        <FormField
+          name="groupSize"
+          label="Group Size"
+          type="number"
+          inputProps={{ "data-cy": "group-size-input", min: 1 }}
+          registerOptions={{ valueAsNumber: true }}
+        />
+        <FormField
+          name="type"
+          label="Type"
+          selectProps={{ "data-cy": "pass-type-select" }}
+          options={[
+            { value: "regular", label: "Regular" },
+            { value: "restroom", label: "Restroom" },
+            { value: "parking", label: "Parking Lot" },
+          ]}
+        />
+        <Button type="submit" data-cy="create-pass-button">
+          Create Pass
+        </Button>
+      </form>
+    </FormProvider>
   );
 }
