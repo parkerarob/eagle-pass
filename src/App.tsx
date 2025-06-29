@@ -14,6 +14,8 @@ import PendingApprovalPage from "./pages/PendingApprovalPage";
 import UserSettingsPage from "./pages/UserSettingsPage";
 import UserProfile from "./components/UserProfile";
 import AdminRoleAssignment from "./components/AdminRoleAssignment";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { PageLoading } from "./components/PageLoading";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -53,45 +55,49 @@ function App() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        Loading...
+        <PageLoading />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {user ? (
-        role === "pending" ? (
-          <PendingApprovalPage />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-100">
+        {user ? (
+          role === "pending" ? (
+            <PendingApprovalPage />
+          ) : (
+            <div>
+              <div className="flex items-center justify-between bg-white p-4 shadow-sm">
+                <h1 className="text-xl font-bold text-gray-800">
+                  Welcome, {user.displayName || user.email}!
+                </h1>
+                <button
+                  onClick={signOutGoogle}
+                  className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+                >
+                  Sign Out
+                </button>
+              </div>
+              <div className="space-y-4 p-4">
+                <UserProfile
+                  displayName={user.displayName}
+                  email={user.email}
+                  role={role ?? ""}
+                />
+                <UserSettingsPage />
+                {role === "admin" && (
+                  <AdminRoleAssignment onAssign={() => {}} />
+                )}
+                <PassLifecyclePage />
+              </div>
+            </div>
+          )
         ) : (
-          <div>
-            <div className="flex items-center justify-between bg-white p-4 shadow-sm">
-              <h1 className="text-xl font-bold text-gray-800">
-                Welcome, {user.displayName || user.email}!
-              </h1>
-              <button
-                onClick={signOutGoogle}
-                className="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
-              >
-                Sign Out
-              </button>
-            </div>
-            <div className="space-y-4 p-4">
-              <UserProfile
-                displayName={user.displayName}
-                email={user.email}
-                role={role ?? ""}
-              />
-              <UserSettingsPage />
-              {role === "admin" && <AdminRoleAssignment onAssign={() => {}} />}
-              <PassLifecyclePage />
-            </div>
-          </div>
-        )
-      ) : (
-        <AuthPage />
-      )}
-    </div>
+          <AuthPage />
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 

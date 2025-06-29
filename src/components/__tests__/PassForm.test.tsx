@@ -1,29 +1,20 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { PassForm } from "../PassForm";
 
 describe("PassForm", () => {
-  it("submits form data", () => {
+  it("submits form data", async () => {
     const mockSubmit = vi.fn();
     render(<PassForm onSubmit={mockSubmit} />);
-
-    fireEvent.change(screen.getByPlaceholderText("Student ID"), {
-      target: { value: "student1" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Origin Location"), {
-      target: { value: "101" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Destination"), {
-      target: { value: "library" },
-    });
-    fireEvent.change(screen.getByLabelText("Group Size"), {
-      target: { value: "2" },
-    });
-    fireEvent.change(screen.getByDisplayValue("Restroom"), {
-      target: { value: "regular" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /create pass/i }));
+    await userEvent.type(screen.getByPlaceholderText("Student ID"), "student1");
+    await userEvent.type(screen.getByPlaceholderText("Origin Location"), "101");
+    await userEvent.type(screen.getByPlaceholderText("Destination"), "library");
+    const groupSizeInput = screen.getByLabelText("Group Size");
+    await userEvent.clear(groupSizeInput);
+    await userEvent.type(groupSizeInput, "2");
+    await userEvent.selectOptions(screen.getByLabelText("Type"), "regular");
+    await userEvent.click(screen.getByRole("button", { name: /create pass/i }));
 
     expect(mockSubmit).toHaveBeenCalledWith({
       studentId: "student1",
