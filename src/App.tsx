@@ -1,13 +1,5 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
-import {
-  onAuthStateChanged,
-  type User,
-  auth,
-  doc,
-  getDoc,
-  db,
-} from "./firebase.ts";
 import AuthPage from "./pages/AuthPage";
 import PassLifecyclePage from "./pages/PassLifecyclePage";
 import { signOutGoogle } from "./services/auth";
@@ -15,6 +7,7 @@ import PendingApprovalPage from "./pages/PendingApprovalPage";
 import UserSettingsPage from "./pages/UserSettingsPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PageLoading } from "./components/PageLoading";
+import { useAuth } from "./state/AuthContext";
 import StudentDashboardPage from "./pages/StudentDashboardPage";
 import PassCreationPage from "./pages/PassCreationPage";
 import ActivePassPage from "./pages/ActivePassPage";
@@ -32,39 +25,7 @@ import DataImportExportPage from "./pages/DataImportExportPage";
 import AuditLogPage from "./pages/AuditLogPage";
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null>(null);
-
-  // For testing purposes, bypass authentication
-  const isTestMode =
-    import.meta.env.MODE === "test" ||
-    (typeof window !== "undefined" && "Cypress" in window);
-
-  useEffect(() => {
-    if (isTestMode) {
-      // In test mode, create a mock user and skip Firebase auth
-      setUser({
-        uid: "test-user",
-        email: "test@example.com",
-        displayName: "Test User",
-      } as User);
-      setLoading(false);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const snap = await getDoc(doc(db, "users", currentUser.uid));
-        setRole(snap.exists() ? snap.data().role : "pending");
-      } else {
-        setRole(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [isTestMode]);
+  const { user, role, loading } = useAuth();
 
   if (loading) {
     return (
