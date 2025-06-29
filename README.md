@@ -74,9 +74,10 @@ To run unit and component tests:
 npm test              # Run tests once
 npm run test:ui       # Open Vitest UI for interactive testing
 npm run test:coverage # Run tests with coverage report
+npm run coverage:check # Run tests and display coverage summary
 ```
 
-Current test coverage: ~24.5% (Target: 80%)
+Run `npm run coverage:check` to see the current coverage percentage. The goal is 80% overall.
 
 ### End-to-End Tests (Cypress)
 
