@@ -20,16 +20,16 @@ interface PassFormProps {
     isGroup?: boolean;
     groupStudentIds?: string[];
   }) => void;
+  onError?: (msg: string) => void;
 }
 
-export function PassForm({ onSubmit }: PassFormProps) {
+export function PassForm({ onSubmit, onError }: PassFormProps) {
   const [studentId, setStudentId] = useState("");
   const [originLocationId, setOriginLocationId] = useState("");
   const [destinationLocationId, setDestinationLocationId] = useState("");
   const [type, setType] = useState<Pass["type"]>("restroom");
   const [isGroup, setIsGroup] = useState(false);
   const [groupStudentIds, setGroupStudentIds] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   const handleGroupStudentChange = (idx: number, value: string) => {
     setGroupStudentIds((prev) => {
@@ -68,10 +68,10 @@ export function PassForm({ onSubmit }: PassFormProps) {
     e.preventDefault();
     const err = validate();
     if (err) {
-      setError(err);
+      if (onError) onError(err);
       return;
     }
-    setError(null);
+    if (onError) onError(""); // Clear any previous error
     onSubmit({
       studentId,
       originLocationId,
@@ -196,11 +196,6 @@ export function PassForm({ onSubmit }: PassFormProps) {
           >
             Add Student
           </button>
-        </div>
-      )}
-      {error && (
-        <div className="text-red-600" data-cy="pass-form-error">
-          {error}
         </div>
       )}
       <button type="submit" className="btn btn-primary">

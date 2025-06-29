@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import * as passService from './pass';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import * as passService from "./pass";
 
 // Mock Firebase functions
-vi.mock('../firebase', () => ({
+vi.mock("../firebase", () => ({
   getDocs: vi.fn(),
   addDoc: vi.fn(),
   setDoc: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('../firebase', () => ({
   db: {},
 }));
 
-import { getDocs, addDoc, setDoc } from '../firebase';
+import { getDocs, addDoc, setDoc } from "../firebase";
 
 // Helper to reset mocks before each test
 beforeEach(() => {
@@ -22,7 +22,13 @@ beforeEach(() => {
 
 // Simplified mock helpers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createMockQuerySnapshot({ empty, docs = [] }: { empty: boolean; docs?: any[] }) {
+function createMockQuerySnapshot({
+  empty,
+  docs = [],
+}: {
+  empty: boolean;
+  docs?: any[];
+}) {
   return {
     empty,
     docs,
@@ -33,91 +39,97 @@ function createMockQuerySnapshot({ empty, docs = [] }: { empty: boolean; docs?: 
   } as any;
 }
 
-function createMockDocumentSnapshot(data: Record<string, unknown>) {
-  return {
-    id: data.id as string,
-    data: () => data,
-    exists: () => true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
-}
-
-function createMockDocumentReference(id = 'pass1') {
+function createMockDocumentReference(id = "pass1") {
   return {
     id,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
 
-describe('Pass Service', () => {
-  describe('createPass', () => {
-    it('should create a new pass if none is open', async () => {
+describe("Pass Service", () => {
+  describe("createPass", () => {
+    it("should create a new pass if none is open", async () => {
       // Arrange: mock Firestore to return no open passes
-      vi.mocked(getDocs).mockResolvedValueOnce(createMockQuerySnapshot({ empty: true }));
-      vi.mocked(addDoc).mockResolvedValueOnce(createMockDocumentReference('pass1'));
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: true }),
+      );
+      vi.mocked(addDoc).mockResolvedValueOnce(
+        createMockDocumentReference("pass1"),
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
-      
+
       // Act
-      const pass = await passService.createPass('student1', '101', 'staff1', 'library', 'other');
-      
+      const pass = await passService.createPass(
+        "student1",
+        "101",
+        "staff1",
+        "library",
+        "other",
+      );
+
       // Assert
-      expect(pass.studentId).toBe('student1');
-      expect(pass.originLocationId).toBe('101');
-      expect(pass.status).toBe('open');
+      expect(pass.studentId).toBe("student1");
+      expect(pass.originLocationId).toBe("101");
+      expect(pass.status).toBe("open");
     });
 
-    it('should throw if student already has an open pass', async () => {
-      vi.mocked(getDocs).mockResolvedValueOnce(createMockQuerySnapshot({ empty: false }));
-      
+    it("should throw if student already has an open pass", async () => {
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false }),
+      );
+
       await expect(
-        passService.createPass('student1', '101', 'staff1', 'library', 'other')
-      ).rejects.toThrow('Student already has an active pass');
+        passService.createPass("student1", "101", "staff1", "library", "other"),
+      ).rejects.toThrow("Student student1 already has an active pass");
     });
   });
 
-  describe('out', () => {
-    it('should throw if trying to out to the current location', async () => {
-      // Arrange: mock pass with currentLocationId = 'library'
-      const passData = {
-        id: 'pass1',
-        studentId: 'student1',
-        status: 'open',
-        openedAt: Date.now(),
-        originLocationId: '101',
-        issuedBy: 'staff1',
-        type: 'other',
-        currentLocationId: 'library',
-      };
-      
-      const mockDocs = [createMockDocumentSnapshot(passData)];
-      vi.mocked(getDocs).mockResolvedValueOnce(createMockQuerySnapshot({ empty: false, docs: mockDocs }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
-      
+  describe("out", () => {
+    it("should throw if trying to out to the current location", async () => {
+      // Arrange
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({
+          empty: false,
+          docs: [
+            {
+              data: () => ({
+                id: "pass1",
+                studentId: "student1",
+                status: "open",
+                openedAt: Date.now(),
+                originLocationId: "library",
+                issuedBy: "staff1",
+                type: "other",
+                currentLocationId: "library",
+              }),
+            },
+          ],
+        }),
+      );
       // Act & Assert
-      await expect(
-        passService.out('pass1', 'library')
-      ).rejects.toThrow('Cannot out to the current location or invalid destination');
+      await expect(passService.out("pass1", "library")).rejects.toThrow(
+        "Cannot out to the current location",
+      );
     });
   });
 
   // Scaffold for inAction, closePass, and helpers
-  describe('inAction', () => {
-    it('should ...', () => {
+  describe("inAction", () => {
+    it("should ...", () => {
       // TODO: Add tests for inAction
     });
   });
 
-  describe('closePass', () => {
-    it('should ...', () => {
+  describe("closePass", () => {
+    it("should ...", () => {
       // TODO: Add tests for closePass
     });
   });
 
-  describe('validation helpers', () => {
-    it('should ...', () => {
+  describe("validation helpers", () => {
+    it("should ...", () => {
       // TODO: Add tests for helpers
     });
   });
-}); 
+});

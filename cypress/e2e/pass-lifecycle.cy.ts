@@ -15,6 +15,7 @@ describe("Pass Lifecycle E2E", () => {
       // Test that form elements exist and are functional
       cy.get('[data-cy="student-id-input"]').should("be.visible");
       cy.get('[data-cy="origin-location-input"]').should("be.visible");
+      cy.get('[data-cy="destination-location-input"]').should("be.visible");
       cy.get('[data-cy="pass-type-select"]').should("be.visible");
       cy.get("button").contains("Create Pass").should("be.visible");
     });
@@ -28,11 +29,16 @@ describe("Pass Lifecycle E2E", () => {
         "have.attr",
         "required",
       );
+      cy.get('[data-cy="destination-location-input"]').should(
+        "have.attr",
+        "required",
+      );
     });
 
     it("should create pass with valid data", () => {
       cy.get('[data-cy="student-id-input"]').type("TEST-STUDENT-001");
-      cy.get('[data-cy="origin-location-input"]').type("CLASSROOM-A");
+      cy.get('[data-cy="origin-location-input"]').select("classroom-a");
+      cy.get('[data-cy="destination-location-input"]').select("restroom");
       cy.get('[data-cy="pass-type-select"]').select("restroom");
       cy.get("button").contains("Create Pass").click();
 
@@ -64,6 +70,7 @@ describe("Pass Lifecycle E2E", () => {
       // Verify that the pass creation form is visible
       cy.get('[data-cy="student-id-input"]').should("be.visible");
       cy.get('[data-cy="origin-location-input"]').should("be.visible");
+      cy.get('[data-cy="destination-location-input"]').should("be.visible");
       cy.get('[data-cy="pass-type-select"]').should("be.visible");
       cy.get("button").contains("Create Pass").should("be.visible");
     });
@@ -73,7 +80,8 @@ describe("Pass Lifecycle E2E", () => {
     it("should show error when Firebase operations fail", () => {
       // Test that form submission shows error when backend is not available
       cy.get('[data-cy="student-id-input"]').type("TEST-STUDENT-ERROR");
-      cy.get('[data-cy="origin-location-input"]').type("CLASSROOM-ERROR");
+      cy.get('[data-cy="origin-location-input"]').select("classroom-b");
+      cy.get('[data-cy="destination-location-input"]').select("library");
       cy.get('[data-cy="pass-type-select"]').select("restroom");
       cy.get("button").contains("Create Pass").click();
 
@@ -85,7 +93,8 @@ describe("Pass Lifecycle E2E", () => {
   context("Business Rules", () => {
     it("should handle form validation for required fields", () => {
       // Try to submit form without student ID
-      cy.get('[data-cy="origin-location-input"]').type("CLASSROOM-C");
+      cy.get('[data-cy="origin-location-input"]').select("classroom-a");
+      cy.get('[data-cy="destination-location-input"]').select("cafeteria");
       cy.get('[data-cy="pass-type-select"]').select("restroom");
       cy.get("button").contains("Create Pass").click();
 
@@ -96,6 +105,7 @@ describe("Pass Lifecycle E2E", () => {
     it("should handle form validation for origin location", () => {
       // Try to submit form without origin location
       cy.get('[data-cy="student-id-input"]').type("TEST-STUDENT-004");
+      cy.get('[data-cy="destination-location-input"]').select("gym");
       cy.get('[data-cy="pass-type-select"]').select("restroom");
       cy.get("button").contains("Create Pass").click();
 
