@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  type User
+  type User,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -16,7 +16,8 @@ import {
   addDoc,
   query,
   where,
-  updateDoc
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -25,7 +26,7 @@ const firebaseConfig = {
   projectId: "eaglepass-dev",
   storageBucket: "eaglepass-dev.firebasestorage.app",
   messagingSenderId: "218859983940",
-  appId: "1:218859983940:web:664723b95728ba7efa9811"
+  appId: "1:218859983940:web:664723b95728ba7efa9811",
 };
 
 // Initialize Firebase
@@ -54,6 +55,7 @@ export {
   query,
   where,
   updateDoc,
+  deleteDoc,
   // Types
 };
 export type { User };
