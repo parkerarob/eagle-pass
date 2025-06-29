@@ -75,19 +75,19 @@ This document outlines all tasks required to complete the Eagle Pass digital hal
 
 ### 1.5 Escalation System
 
-- [ ] **Time-based Warnings**
-  - [ ] Implement 10-minute warning system
-  - [ ] Create 20-minute alert system
-  - [ ] Add configurable thresholds
-  - [ ] Implement notification dispatch
-  - [ ] Create escalation logging
+- [x] **Time-based Warnings**
+  - [x] Implement 10-minute warning system
+  - [x] Create 20-minute alert system
+  - [x] Add configurable thresholds
+  - [x] Implement notification dispatch
+  - [x] Create escalation logging
 
-- [ ] **Notification System**
-  - [ ] Set up email notifications (no PII)
-  - [ ] Create in-app notifications
-  - [ ] Add push notification support
-  - [ ] Implement role-based notification routing
-  - [ ] Add notification preferences
+- [x] **Notification System**
+  - [x] Set up email notifications (no PII)
+  - [x] Create in-app notifications
+  - [x] Add push notification support
+  - [x] Implement role-based notification routing
+  - [x] Add notification preferences
 
 ### 1.6 Group Management
 
