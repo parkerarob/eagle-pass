@@ -8,6 +8,7 @@ import UserSettingsPage from "./pages/UserSettingsPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PageLoading } from "./components/PageLoading";
 import { useAuth } from "./state/AuthContext";
+import InstallPrompt from "./components/InstallPrompt";
 import StudentDashboardPage from "./pages/StudentDashboardPage";
 import PassCreationPage from "./pages/PassCreationPage";
 import ActivePassPage from "./pages/ActivePassPage";
@@ -125,6 +126,7 @@ function App() {
           <AuthPage />
         )}
       </div>
+      <InstallPrompt />
     </ErrorBoundary>
   );
 }
