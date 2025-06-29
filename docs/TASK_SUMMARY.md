@@ -49,12 +49,14 @@ E2E test coverage: Complete user flows
 - Authentication setup started
 - Google SSO with role-based access
 - Basic pass lifecycle implemented (create, check-in/out, close)
+- Schedule management services added
 
 ### 🔄 In Progress
 
 - Component development
 - Firebase schema design
 - Authentication & User Management
+- Schedule UI components
 
 ### 📋 Todo (High Priority)
 
@@ -68,7 +70,7 @@ E2E test coverage: Complete user flows
 
 ### Unit Tests (Target: 80% coverage)
 
-- [ ] Services: auth, pass, schedule, location, group
+- [x] Services: auth, pass, schedule, location, group
 - [ ] Components: forms, displays, navigation
 - [ ] Utilities: validation, formatting, permissions
 - [ ] Hooks: auth, real-time data, forms
