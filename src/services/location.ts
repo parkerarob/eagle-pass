@@ -43,13 +43,55 @@ export async function deleteLocation(id: string): Promise<void> {
   await deleteDoc(doc(db, LOCATIONS, id));
 }
 
-export async function checkLocationRestrictions(id: string): Promise<void> {
+export async function assignStaffToLocation(
+  id: string,
+  staffIds: string[],
+): Promise<void> {
+  await updateLocation(id, { staffIds });
+}
+
+export async function setPeriodOverrides(
+  id: string,
+  overrides: Record<string, string>,
+): Promise<void> {
+  await updateLocation(id, { periodOverrides: overrides });
+}
+
+export async function resolveLocation(
+  id: string,
+  period: string,
+): Promise<Location | null> {
+  const loc = await getLocation(id);
+  if (!loc) return null;
+  const override = loc.periodOverrides?.[period];
+  return override ? getLocation(override) : loc;
+}
+
+export async function checkLocationRestrictions(
+  id: string,
+  timeSpentMinutes?: number,
+): Promise<void> {
   const loc = await getLocation(id);
   if (!loc) throw new Error("Location not found");
   if (loc.planningBlocked) {
     throw new Error("Location blocked during planning period");
   }
-  if (loc.capacity && loc.currentCount && loc.currentCount >= loc.capacity) {
+  if (
+    !loc.shared &&
+    loc.capacity &&
+    loc.currentCount &&
+    loc.currentCount >= loc.capacity
+  ) {
     throw new Error("Location at capacity");
+  }
+  if (loc.requiresApproval) {
+    throw new Error("Location requires approval");
+  }
+  if (
+    loc.timeLimitMinutes &&
+    timeSpentMinutes !== undefined &&
+    timeSpentMinutes > loc.timeLimitMinutes
+  ) {
+    throw new Error("Time limit exceeded for location");
   }
 }

@@ -306,6 +306,49 @@ export async function archivePass(passId: string): Promise<void> {
 }
 
 /**
+ * Force close a pass regardless of current location. Used by admins.
+ * @param passId - The pass ID
+ */
+export async function forceClosePass(passId: string): Promise<void> {
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
+  const pass = passSnap.docs[0].data() as Pass;
+  if (!isPassOpen(pass)) {
+    throw new Error("Cannot force close pass: pass is not open");
+  }
+  await setDoc(
+    doc(db, "passes", passId),
+    { status: "closed", closedAt: Date.now(), forceClosed: true },
+    { merge: true },
+  );
+}
+
+/**
+ * Automatically close all open passes for a student (e.g., on period change).
+ * @param studentId - The student's ID
+ */
+export async function autoClosePassesForStudent(
+  studentId: string,
+): Promise<void> {
+  const q = query(
+    collection(db, "passes"),
+    where("studentId", "==", studentId),
+    where("status", "==", "open"),
+  );
+  const openPasses = await getDocs(q);
+  for (const snap of openPasses.docs) {
+    const id = snap.data().id as string;
+    await setDoc(
+      doc(db, "passes", id),
+      { status: "closed", closedAt: Date.now(), autoClosed: true },
+      { merge: true },
+    );
+  }
+}
+
+/**
  * Retrieve the current state of a pass.
  * @param passId - The pass ID
  * @returns Pass object with current status and history
