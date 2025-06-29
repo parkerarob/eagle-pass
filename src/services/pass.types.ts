@@ -15,6 +15,8 @@ export interface Pass {
   groupSize?: number;
   archived?: boolean;
   archivedAt?: number;
+  forceClosed?: boolean;
+  autoClosed?: boolean;
 }
 
 // Leg direction

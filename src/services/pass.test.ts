@@ -21,13 +21,13 @@ beforeEach(() => {
 });
 
 // Simplified mock helpers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function createMockQuerySnapshot({
   empty,
   docs = [],
 }: {
   empty: boolean;
-  docs?: any[];
+  docs?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }) {
   return {
     empty,
@@ -162,6 +162,52 @@ describe("Pass Service", () => {
       await passService.archivePass("pass1");
       const call = vi.mocked(setDoc).mock.calls[0];
       expect(call[1]).toMatchObject({ archived: true });
+    });
+  });
+
+  describe("forceClosePass", () => {
+    it("sets forceClosed flag", async () => {
+      const passData = {
+        id: "pass1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        issuedBy: "staff1",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+
+      await passService.forceClosePass("pass1");
+      const call = vi.mocked(setDoc).mock.calls[0];
+      expect(call[1]).toMatchObject({ forceClosed: true });
+    });
+  });
+
+  describe("autoClosePassesForStudent", () => {
+    it("closes all open passes for student", async () => {
+      const passData = {
+        id: "pass1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        issuedBy: "staff1",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+
+      await passService.autoClosePassesForStudent("s1");
+      const call = vi.mocked(setDoc).mock.calls[0];
+      expect(call[1]).toMatchObject({ autoClosed: true });
     });
   });
 });

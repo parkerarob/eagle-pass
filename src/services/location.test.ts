@@ -102,10 +102,34 @@ describe("location service", () => {
     ).rejects.toThrow("Location at capacity");
 
     vi.mocked(getDoc).mockResolvedValueOnce(
+      createDocSnapshot({ id: "loc", name: "L", requiresApproval: true }),
+    );
+    await expect(
+      locationService.checkLocationRestrictions("loc"),
+    ).rejects.toThrow("Location requires approval");
+
+    vi.mocked(getDoc).mockResolvedValueOnce(
+      createDocSnapshot({ id: "loc", name: "L", timeLimitMinutes: 5 }),
+    );
+    await expect(
+      locationService.checkLocationRestrictions("loc", 10),
+    ).rejects.toThrow("Time limit exceeded for location");
+
+    vi.mocked(getDoc).mockResolvedValueOnce(
       createDocSnapshot({ id: "loc", name: "L" }),
     );
     await expect(
       locationService.checkLocationRestrictions("loc"),
     ).resolves.toBeUndefined();
+  });
+
+  it("assigns staff and sets overrides", async () => {
+    vi.mocked(updateDoc).mockResolvedValue(undefined as unknown as void);
+    await locationService.assignStaffToLocation("loc", ["s1"]);
+    let call = vi.mocked(updateDoc).mock.calls[0];
+    expect(call[1]).toMatchObject({ staffIds: ["s1"] });
+    await locationService.setPeriodOverrides("loc", { "1": "alt" });
+    call = vi.mocked(updateDoc).mock.calls[1];
+    expect(call[1]).toMatchObject({ periodOverrides: { "1": "alt" } });
   });
 });

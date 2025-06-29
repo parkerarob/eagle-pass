@@ -8,4 +8,5 @@ export interface Location {
   planningBlocked?: boolean;
   requiresApproval?: boolean;
   timeLimitMinutes?: number;
+  periodOverrides?: Record<string, string>;
 }
