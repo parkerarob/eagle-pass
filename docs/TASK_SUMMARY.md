@@ -2,6 +2,8 @@
 
 ## Quick Overview
 
+See `PROJECT_COMPLETION_TASKS.md` for a detailed checklist of all development tasks.
+
 Total estimated completion time: 12 weeks
 Target test coverage: 80%
 E2E test coverage: Complete user flows
@@ -54,6 +56,8 @@ E2E test coverage: Complete user flows
 - Escalation and group management
 - Reporting & analytics features
 - Component library completed
+- Global state management implemented
+- PWA functionality (service worker, offline, install prompts)
 
 ### 🔄 In Progress
 - Increase test coverage (current 43%)
