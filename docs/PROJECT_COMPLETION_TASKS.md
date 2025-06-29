@@ -91,12 +91,12 @@ This document outlines all tasks required to complete the Eagle Pass digital hal
 
 ### 1.6 Group Management
 
-- [ ] **Group CRUD Operations**
-  - [ ] Create group management interface
-  - [ ] Implement positive/negative group types
-  - [ ] Add student assignment to groups
-  - [ ] Create group pass functionality
-  - [ ] Add group permission overrides
+- [x] **Group CRUD Operations**
+  - [x] Create group management interface
+  - [x] Implement positive/negative group types
+  - [x] Add student assignment to groups
+  - [x] Create group pass functionality
+  - [x] Add group permission overrides
 
 ### 1.7 Reporting & Analytics
 
