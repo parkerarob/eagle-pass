@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as passService from "./pass";
+// Add Firestore types for proper mocking
+import type { QuerySnapshot, DocumentReference } from "firebase/firestore";
 
 // Mock Firebase functions
 vi.mock("../firebase", () => ({
@@ -21,29 +23,29 @@ beforeEach(() => {
 });
 
 // Simplified mock helpers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface MockDoc {
+  data: () => Record<string, unknown>;
+}
 function createMockQuerySnapshot({
   empty,
   docs = [],
 }: {
   empty: boolean;
-  docs?: any[];
-}) {
+  docs?: MockDoc[];
+}): QuerySnapshot<unknown> {
   return {
     empty,
     docs,
     size: docs.length,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    forEach: (cb: (doc: any) => void) => docs.forEach(cb),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+    forEach: (cb: (doc: MockDoc) => void) => docs.forEach(cb),
+    // Only the properties used by the service are mocked
+  } as unknown as QuerySnapshot<unknown>;
 }
 
-function createMockDocumentReference(id = "pass1") {
+function createMockDocumentReference(id = "pass1"): DocumentReference<unknown> {
   return {
     id,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+  } as unknown as DocumentReference<unknown>;
 }
 
 describe("Pass Service", () => {
@@ -56,8 +58,7 @@ describe("Pass Service", () => {
       vi.mocked(addDoc).mockResolvedValueOnce(
         createMockDocumentReference("pass1"),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined);
 
       // Act
       const pass = await passService.createPass(
