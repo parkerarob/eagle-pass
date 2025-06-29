@@ -20,25 +20,25 @@ This document outlines all tasks required to complete the Eagle Pass digital hal
   - [x] Create user data validation ✅
 
 ### 1.2 Pass Lifecycle Implementation
-- [ ] **Pass Creation Flow**
-  - [ ] Complete PassForm component with all fields
-  - [ ] Implement location selection with validation
-  - [ ] Add pass type selection (regular, restroom, parking lot)
-  - [ ] Implement permission checking before creation
-  - [ ] Add group pass support
+- [x] **Pass Creation Flow**
+  - [x] Complete PassForm component with all fields
+  - [x] Implement location selection with validation
+  - [x] Add pass type selection (regular, restroom, parking lot)
+  - [x] Implement permission checking before creation
+  - [x] Add group pass support
 
-- [ ] **Check-in/Out System**
-  - [ ] Complete out() function with destination validation
-  - [ ] Implement restroom exception logic
-  - [ ] Add location validation for check-ins
-  - [ ] Create multi-stop pass support
-  - [ ] Implement immediate return functionality
+- [x] **Check-in/Out System**
+  - [x] Complete out() function with destination validation
+  - [x] Implement restroom exception logic
+  - [x] Add location validation for check-ins
+  - [x] Create multi-stop pass support
+  - [x] Implement immediate return functionality
 
-- [ ] **Pass Closure**
-  - [ ] Complete closePass() function
+- [x] **Pass Closure**
+  - [x] Complete closePass() function
   - [ ] Add automatic closure on period change
   - [ ] Implement force-close for admins
-  - [ ] Add pass archival system
+  - [x] Add pass archival system
 
 ### 1.3 Location Management
 - [ ] **Location CRUD Operations**

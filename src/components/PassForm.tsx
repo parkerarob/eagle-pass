@@ -5,6 +5,8 @@ interface PassFormProps {
   onSubmit: (data: {
     studentId: string;
     originLocationId: string;
+    destinationId: string;
+    groupSize: number;
     type?: Pass["type"];
   }) => void;
 }
@@ -12,13 +14,21 @@ interface PassFormProps {
 export function PassForm({ onSubmit }: PassFormProps) {
   const [studentId, setStudentId] = useState("");
   const [originLocationId, setOriginLocationId] = useState("");
+  const [destinationId, setDestinationId] = useState("");
+  const [groupSize, setGroupSize] = useState(1);
   const [type, setType] = useState<Pass["type"]>("restroom");
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ studentId, originLocationId, type });
+        onSubmit({
+          studentId,
+          originLocationId,
+          destinationId,
+          groupSize,
+          type,
+        });
       }}
       className="space-y-4"
     >
@@ -50,6 +60,32 @@ export function PassForm({ onSubmit }: PassFormProps) {
       </div>
       <div>
         <label>
+          Destination
+          <input
+            value={destinationId}
+            onChange={(e) => setDestinationId(e.target.value)}
+            className="input"
+            placeholder="Destination"
+            data-cy="destination-input"
+            required
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Group Size
+          <input
+            type="number"
+            min={1}
+            value={groupSize}
+            onChange={(e) => setGroupSize(Number(e.target.value))}
+            className="input"
+            data-cy="group-size-input"
+          />
+        </label>
+      </div>
+      <div>
+        <label>
           Type
           <select
             value={type}
@@ -57,9 +93,9 @@ export function PassForm({ onSubmit }: PassFormProps) {
             className="input"
             data-cy="pass-type-select"
           >
+            <option value="regular">Regular</option>
             <option value="restroom">Restroom</option>
             <option value="parking">Parking Lot</option>
-            <option value="other">Other</option>
           </select>
         </label>
       </div>

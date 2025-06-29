@@ -42,15 +42,15 @@ E2E test coverage: Complete user flows
 - Initial components (CheckInButton, PassForm, ReturnButton)
 - Authentication setup started
 - Google SSO with role-based access
+- Basic pass lifecycle implemented (create, check-in/out, close)
 
 ### 🔄 In Progress
-- Pass service implementation (~29% tested)
 - Component development
 - Firebase schema design
 - Authentication & User Management
 
 ### 📋 Todo (High Priority)
-1. Complete pass lifecycle logic
+1. Finalize advanced pass lifecycle features
 2. ~~Implement user role system~~ (completed)
 3. Create location management
 4. Build escalation system
