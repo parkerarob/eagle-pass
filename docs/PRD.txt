@@ -225,7 +225,7 @@ To ensure the quality, security, and FERPA compliance of EaglePass, a multi-face
 ### Unit and Component Testing
 - **Purpose:** To verify the correctness of individual functions, React components, and small modules in isolation. This helps in early bug detection and ensures each part of the application behaves as expected.
 - **Tools:**
-    - **Jest:** A JavaScript testing framework for running unit tests.
+    - **Vitest:** A Vite-native testing framework used for running unit tests.
     - **React Testing Library:** Used for testing React components in a way that simulates user interactions, promoting robust and maintainable tests.
 
 ### End-to-End (E2E) Testing

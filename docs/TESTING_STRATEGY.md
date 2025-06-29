@@ -3,6 +3,11 @@
 ## Overview
 This document outlines the comprehensive testing strategy for the Eagle Pass digital hall pass system, targeting 80% code coverage and complete E2E test coverage of critical user flows.
 
+### Tools
+- **Vitest** for unit and integration tests
+- **React Testing Library** for React component testing
+- **Cypress** for end-to-end tests
+
 ## Testing Philosophy
 
 ### Test Pyramid
