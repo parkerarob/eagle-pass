@@ -80,7 +80,8 @@ function isValidRestroomReturn(pass: Pass, locationId: string): boolean {
  * @param scheduledLocationId - The student's scheduled/origin location
  * @param issuedBy - The staff/admin issuing the pass
  * @param initialDestination - The first destination for the pass
- * @param passType - The type of pass (e.g., normal, restroom, parking)
+ * @param passType - The type of pass (e.g., regular, restroom, parking)
+ * @param groupSize - Number of students on the pass
  * @returns The new pass object or error
  */
 export async function createPass(
@@ -89,6 +90,7 @@ export async function createPass(
   issuedBy: string,
   initialDestination: string,
   passType?: Pass["type"],
+  groupSize = 1,
 ): Promise<Pass> {
   // 1. Enforce one active pass per student
   const passesRef = collection(db, "passes");
@@ -100,6 +102,11 @@ export async function createPass(
   const openPasses = await getDocs(q);
   if (!openPasses.empty) {
     throw new Error("Student already has an active pass");
+  }
+  // 1b. Permission check
+  const allowed = await isStaffOrAdmin();
+  if (!allowed) {
+    throw new Error("Insufficient permissions to create pass");
   }
   // 2. Validate initial destination
   if (scheduledLocationId === initialDestination) {
@@ -117,6 +124,7 @@ export async function createPass(
     issuedBy,
     type: passType,
     currentLocationId: scheduledLocationId,
+    groupSize,
   };
   // 4. Persist the pass to Firestore
   const docRef = await addDoc(passesRef, pass);
@@ -275,6 +283,26 @@ export async function closePass(passId: string): Promise<void> {
   await setDoc(doc(db, "passes", passId), updatedPass, { merge: true });
   // 5. Return confirmation (void)
   return;
+}
+
+/**
+ * Archive a closed pass for long-term storage.
+ * @param passId - The pass ID
+ */
+export async function archivePass(passId: string): Promise<void> {
+  const passSnap = await getDocs(
+    query(collection(db, "passes"), where("id", "==", passId)),
+  );
+  if (passSnap.empty) throw new Error("Pass not found");
+  const pass = passSnap.docs[0].data() as Pass;
+  if (pass.status !== "closed") {
+    throw new Error("Cannot archive pass that is not closed");
+  }
+  await setDoc(
+    doc(db, "passes", passId),
+    { archived: true, archivedAt: Date.now() },
+    { merge: true },
+  );
 }
 
 /**

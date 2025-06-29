@@ -1,5 +1,5 @@
 // Pass status
-export type PassStatus = 'open' | 'closed' | 'escalated';
+export type PassStatus = "open" | "closed" | "escalated";
 
 // Pass summary document (passes/{id})
 export interface Pass {
@@ -11,11 +11,14 @@ export interface Pass {
   originLocationId: string;
   currentLocationId?: string;
   issuedBy: string; // staff/admin
-  type?: 'restroom' | 'parking' | 'other';
+  type?: "regular" | "restroom" | "parking";
+  groupSize?: number;
+  archived?: boolean;
+  archivedAt?: number;
 }
 
 // Leg direction
-export type LegDirection = 'out' | 'in';
+export type LegDirection = "out" | "in";
 
 // Leg document (legs/{passId}/{legId})
 export interface PassLeg {
@@ -27,4 +30,4 @@ export interface PassLeg {
   direction: LegDirection;
   legNumber: number;
   timestamp: number; // ms since epoch
-} 
+}
