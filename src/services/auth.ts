@@ -10,7 +10,7 @@ import {
 } from "../firebase";
 
 const googleProvider = new GoogleAuthProvider();
-const ALLOWED_DOMAINS = ["school.edu"];
+const ALLOWED_DOMAINS = ["nhcs.net", "students.nhcs.net"];
 
 export const createUserProfile = async (user: User) => {
   if (!user) return;
