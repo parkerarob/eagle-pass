@@ -20,7 +20,8 @@
     "test:coverage": "vitest run --coverage",
     "coverage:check": "node scripts/check-coverage.js",
     "agent:init": "node scripts/agent-init.js",
-    "agent:complete": "node scripts/task-complete.js"
+    "agent:complete": "node scripts/task-complete.js",
+    "cypress:run": "cypress run"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
