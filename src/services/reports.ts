@@ -69,11 +69,29 @@ export async function buildCustomReport(filters: ReportFilters) {
   return fetchPasses(filters);
 }
 
-export function exportToCSV(rows: Record<string, unknown>[]): string {
+export function maskPII(
+  rows: Record<string, unknown>[],
+): Record<string, unknown>[] {
+  return rows.map((r) => {
+    const masked = { ...r };
+    if (typeof masked.studentId === "string") {
+      masked.studentId = masked.studentId.replace(/.(?=.{4})/g, "*");
+    }
+    return masked;
+  });
+}
+
+export function exportToCSV(
+  rows: Record<string, unknown>[],
+  mask = true,
+): string {
   if (!rows.length) return "";
-  const headers = Object.keys(rows[0]);
-  const lines = rows.map((r) =>
-    headers.map((h) => JSON.stringify(r[h] ?? "")).join(","),
+  const data = mask ? maskPII(rows) : rows;
+  const headers = Object.keys(data[0]);
+  const lines = data.map((r) =>
+    headers
+      .map((h) => JSON.stringify((r as Record<string, unknown>)[h] ?? ""))
+      .join(","),
   );
   return [headers.join(","), ...lines].join("\n");
 }

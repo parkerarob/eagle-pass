@@ -7,9 +7,11 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
   addDoc,
   setDoc,
   doc,
+  auth,
 } from "../firebase";
 
 // --- Pass State & Validation Helpers ---
@@ -393,8 +395,11 @@ export async function validateAction(
 
 // --- Helpers ---
 export async function isStaffOrAdmin(): Promise<boolean> {
-  // TODO: Implement role check (stub: always true for now)
-  return true;
+  const user = auth.currentUser;
+  if (!user) return false;
+  const snap = await getDoc(doc(db, "users", user.uid));
+  const role = snap.exists() ? (snap.data().role as string) : null;
+  return role === "staff" || role === "admin";
 }
 
 // Export aliases for compatibility with existing component imports
