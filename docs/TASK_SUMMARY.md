@@ -66,7 +66,7 @@ E2E test coverage: Complete user flows
 - Advanced location features (staff assignment, overrides, approvals, time limits)
 
 ### 🔄 In Progress
-- Increase test coverage (current 48.38%)
+- Increase test coverage (current 57.91%)
 
 
 ### 📋 Todo (High Priority)
@@ -82,9 +82,9 @@ E2E test coverage: Complete user flows
 ### Unit Tests (Target: 80% coverage)
 
 - [x] Services: auth, pass, schedule, location, group
-- [ ] Components: forms, displays, navigation
-- [ ] Utilities: validation, formatting, permissions
-- [ ] Hooks: auth, real-time data, forms
+- [x] Components: forms, displays, navigation
+- [x] Utilities: validation, formatting, permissions
+- [x] Hooks: auth, real-time data, forms
 
 ### E2E Tests (Cypress)
 

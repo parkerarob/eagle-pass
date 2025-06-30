@@ -71,8 +71,7 @@ describe("Pass Service", () => {
       vi.mocked(addDoc).mockResolvedValueOnce(
         createMockDocumentReference("pass1"),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
 
       // Act
       const pass = await passService.createPass(
@@ -118,8 +117,7 @@ describe("Pass Service", () => {
       vi.mocked(getDocs).mockResolvedValueOnce(
         createMockQuerySnapshot({ empty: false, docs: mockDocs }),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
 
       // Act & Assert
       await expect(passService.out("pass1", "library")).rejects.toThrow(
@@ -130,20 +128,112 @@ describe("Pass Service", () => {
 
   // Scaffold for inAction, closePass, and helpers
   describe("inAction", () => {
-    it("should ...", () => {
-      // TODO: Add tests for inAction
+    it("closes pass when returning to origin", async () => {
+      const passData = {
+        id: "p1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        issuedBy: "staff1",
+        currentLocationId: "library",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: true, docs: [] }),
+      );
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
+      const result = await passService.inAction("p1", "101");
+      expect(result.status).toBe("closed");
+      expect(setDoc).toHaveBeenCalled();
+    });
+
+    it("rejects invalid location", async () => {
+      const passData = {
+        id: "p1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        issuedBy: "staff1",
+        currentLocationId: "library",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      await expect(passService.inAction("p1", "gym")).rejects.toThrow();
     });
   });
 
   describe("closePass", () => {
-    it("should ...", () => {
-      // TODO: Add tests for closePass
+    it("closes pass at origin", async () => {
+      const passData = {
+        id: "p1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        currentLocationId: "101",
+        issuedBy: "staff1",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
+      await passService.closePass("p1");
+      expect(setDoc).toHaveBeenCalled();
+    });
+
+    it("throws when not at origin", async () => {
+      const passData = {
+        id: "p1",
+        studentId: "s1",
+        status: "open",
+        openedAt: Date.now(),
+        originLocationId: "101",
+        currentLocationId: "lib",
+        issuedBy: "staff1",
+      };
+      const mockDocs = [createMockDocumentSnapshot(passData)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      await expect(passService.closePass("p1")).rejects.toThrow();
     });
   });
 
   describe("validation helpers", () => {
-    it("should ...", () => {
-      // TODO: Add tests for helpers
+    it("checks staff or admin roles", async () => {
+      vi.mocked(getDoc).mockResolvedValueOnce({
+        exists: () => true,
+        data: () => ({ role: "admin" }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+      const result = await passService.isStaffOrAdmin();
+      expect(result).toBe(true);
+    });
+
+    it("validates out action", async () => {
+      const pass = {
+        id: "p1",
+        studentId: "s1",
+        status: "open",
+        openedAt: 1,
+        originLocationId: "101",
+        currentLocationId: "101",
+        issuedBy: "staff1",
+      };
+      const mockDocs = [createMockDocumentSnapshot(pass)];
+      vi.mocked(getDocs).mockResolvedValueOnce(
+        createMockQuerySnapshot({ empty: false, docs: mockDocs }),
+      );
+      const valid = await passService.validateAction("p1", "out", "101");
+      expect(valid).toBe(false);
     });
   });
 
@@ -162,8 +252,7 @@ describe("Pass Service", () => {
       vi.mocked(getDocs).mockResolvedValueOnce(
         createMockQuerySnapshot({ empty: false, docs: mockDocs }),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
 
       await passService.archivePass("pass1");
       const call = vi.mocked(setDoc).mock.calls[0];
@@ -185,8 +274,7 @@ describe("Pass Service", () => {
       vi.mocked(getDocs).mockResolvedValueOnce(
         createMockQuerySnapshot({ empty: false, docs: mockDocs }),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
 
       await passService.forceClosePass("pass1");
       const call = vi.mocked(setDoc).mock.calls[0];
@@ -208,8 +296,7 @@ describe("Pass Service", () => {
       vi.mocked(getDocs).mockResolvedValueOnce(
         createMockQuerySnapshot({ empty: false, docs: mockDocs }),
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      vi.mocked(setDoc).mockResolvedValueOnce(undefined as any);
+      vi.mocked(setDoc).mockResolvedValueOnce(undefined as unknown as void);
 
       await passService.autoClosePassesForStudent("s1");
       const call = vi.mocked(setDoc).mock.calls[0];
