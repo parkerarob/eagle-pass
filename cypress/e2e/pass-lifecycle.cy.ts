@@ -48,16 +48,30 @@ describe("Pass Lifecycle E2E", () => {
       cy.log(
         "Skipping pass creation due to Firebase not being configured for tests",
       );
+      cy.window().then((win) => {
+        // Set a fake pass so buttons appear
+        const helper = (
+          win as unknown as { __setPassForTest?: (p: unknown) => void }
+        ).__setPassForTest;
+        helper?.({
+          id: "p1",
+          studentId: "s1",
+          originLocationId: "class",
+          status: "open",
+        });
+      });
     });
 
-    it("should not show check-in controls without active pass", () => {
-      // When there's no active pass, check-in controls should not be visible
-      cy.get('[data-cy="checkin-location-input"]').should("not.exist");
-      cy.get('[data-cy="checkin-button"]').should("not.exist");
-      cy.get('[data-cy="return-button"]').should("not.exist");
+    it("should show check-in and return controls when pass active", () => {
+      cy.get('[data-cy="checkin-button"]').should("be.visible");
+      cy.get('[data-cy="return-button"]').should("be.visible");
+    });
 
-      // Form should still be visible for creating a new pass
-      cy.get('[data-cy="student-id-input"]').should("be.visible");
+    it("handles check-in and return flow", () => {
+      cy.get('[data-cy="checkin-button"]').click();
+      cy.get('[data-cy="success-msg"]').should("be.visible");
+      cy.get('[data-cy="return-button"]').click();
+      cy.get('[data-cy="success-msg"]').should("be.visible");
     });
 
     it("should show form when no active pass exists", () => {
