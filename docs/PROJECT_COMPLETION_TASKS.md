@@ -215,46 +215,46 @@ Last verification on 2025-06-30: tests pass, coverage 48.38%.
 
 ### 4.1 Unit Testing
 
-- [ ] **Service Layer Tests**
-  - [ ] Complete pass.ts tests (currently ~29%)
-    - [ ] Test all CRUD operations
-    - [ ] Test validation functions
-    - [ ] Test error scenarios
-    - [ ] Test edge cases
-  - [ ] Create auth.ts tests
-    - [ ] Test authentication flow
-    - [ ] Test role checking
-    - [ ] Test token management
-  - [ ] Add schedule service tests
-  - [ ] Create location service tests
-  - [ ] Implement group service tests
+- [x] **Service Layer Tests**
+  - [x] Complete pass.ts tests (currently ~29%)
+    - [x] Test all CRUD operations
+    - [x] Test validation functions
+    - [x] Test error scenarios
+    - [x] Test edge cases
+  - [x] Create auth.ts tests
+    - [x] Test authentication flow
+    - [x] Test role checking
+    - [x] Test token management
+  - [x] Add schedule service tests
+  - [x] Create location service tests
+  - [x] Implement group service tests
 
-- [ ] **Component Testing**
-  - [ ] Test all form components
-    - [ ] PassForm component
-    - [ ] Login components
-    - [ ] Settings forms
-  - [ ] Test display components
-    - [ ] Pass display cards
-    - [ ] Dashboard widgets
-    - [ ] Navigation components
-  - [ ] Test interactive components
-    - [ ] CheckInButton (basic test exists)
-    - [ ] ReturnButton
-    - [ ] Action menus
+- [x] **Component Testing**
+  - [x] Test all form components
+    - [x] PassForm component
+    - [x] Login components
+    - [x] Settings forms
+  - [x] Test display components
+    - [x] Pass display cards
+    - [x] Dashboard widgets
+    - [x] Navigation components
+  - [x] Test interactive components
+    - [x] CheckInButton (basic test exists)
+    - [x] ReturnButton
+    - [x] Action menus
 
-- [ ] **Hook Testing**
-  - [ ] Create custom hook tests
-  - [ ] Test authentication hooks
-  - [ ] Test real-time data hooks
-  - [ ] Test form hooks
-  - [ ] Test navigation hooks
+- [x] **Hook Testing**
+  - [x] Create custom hook tests
+  - [x] Test authentication hooks
+  - [x] Test real-time data hooks
+  - [x] Test form hooks
+  - [x] Test navigation hooks
 
-- [ ] **Utility Function Testing**
-  - [ ] Test date/time utilities
-  - [ ] Test validation utilities
-  - [ ] Test formatting utilities
-  - [ ] Test permission checking utilities
+- [x] **Utility Function Testing**
+  - [x] Test date/time utilities
+  - [x] Test validation utilities
+  - [x] Test formatting utilities
+  - [x] Test permission checking utilities
 
 ### 4.2 Integration Testing
 

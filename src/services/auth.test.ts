@@ -11,7 +11,7 @@ vi.mock("../firebase", () => ({
   setDoc: vi.fn(),
 }));
 
-import { signInWithPopup, getDoc } from "../firebase";
+import { signInWithPopup, getDoc, setDoc, auth, type User } from "../firebase";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -36,5 +36,23 @@ describe("auth service", () => {
       exists: () => false,
     } as unknown as { exists: () => boolean });
     await expect(authService.signInWithGoogle()).resolves.toBeDefined();
+  });
+
+  it("signs out user", async () => {
+    await authService.signOutGoogle();
+    expect(auth.signOut).toHaveBeenCalled();
+  });
+
+  it("creates user profile", async () => {
+    const user = {
+      uid: "2",
+      email: "user@school.edu",
+      displayName: "U",
+    } as User;
+    vi.mocked(getDoc).mockResolvedValueOnce({
+      exists: () => false,
+    } as unknown as { exists: () => boolean });
+    await authService.createUserProfile(user);
+    expect(setDoc).toHaveBeenCalled();
   });
 });

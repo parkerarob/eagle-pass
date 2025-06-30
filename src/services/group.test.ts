@@ -129,3 +129,17 @@ describe("group service", () => {
     expect(createPass).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("hasPermissionOverride", () => {
+  it("returns true when override flag set", () => {
+    expect(
+      groupService.hasPermissionOverride({
+        id: "g1",
+        name: "G",
+        type: "positive",
+        studentIds: [],
+        permissionOverride: true,
+      }),
+    ).toBe(true);
+  });
+});
