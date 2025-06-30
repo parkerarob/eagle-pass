@@ -61,6 +61,9 @@ E2E test coverage: Complete user flows
 - Firestore schema configured (collections, indexes, rules)
 - Cloud Functions implemented for pass management and integrations
 - Security features implemented (PII masking, audit trail, role-based access)
+- Automatic pass closure on period change
+- Admin force-close functionality
+- Advanced location features (staff assignment, overrides, approvals, time limits)
 
 ### 🔄 In Progress
 - Increase test coverage (current 48.38%)
