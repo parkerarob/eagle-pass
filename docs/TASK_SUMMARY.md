@@ -42,7 +42,7 @@ E2E test coverage: Complete user flows
 
 ## Current Status
 
-**Test Coverage:** 46.40%
+**Test Coverage:** 47.36%
 
 ### ✅ Completed
 
@@ -59,9 +59,10 @@ E2E test coverage: Complete user flows
 - Global state management implemented
 - PWA functionality (service worker, offline, install prompts)
 - Firestore schema configured (collections, indexes, rules)
+- Cloud Functions implemented for pass management and integrations
 
 ### 🔄 In Progress
-- Increase test coverage (current 46.40%)
+- Increase test coverage (current 47.36%)
 
 
 ### 📋 Todo (High Priority)
