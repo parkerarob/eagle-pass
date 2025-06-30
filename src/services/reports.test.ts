@@ -49,9 +49,17 @@ describe("reports service", () => {
 
   it("exports csv", () => {
     const csv = reports.exportToCSV([
-      { a: 1, b: "two" },
-      { a: 3, b: "four" },
+      { studentId: "123456", a: 1, b: "two" },
+      { studentId: "789000", a: 3, b: "four" },
     ]);
     expect(csv.split("\n").length).toBe(3);
+    expect(csv).toContain("**3456");
+  });
+
+  it("masks PII", () => {
+    const rows = reports.maskPII([{ studentId: "9999" }]);
+    expect(rows[0].studentId).toBe("9999");
+    const masked = reports.maskPII([{ studentId: "123456" }])[0].studentId;
+    expect(masked).toBe("**3456");
   });
 });

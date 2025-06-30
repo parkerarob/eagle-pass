@@ -10,14 +10,20 @@ vi.mock("../firebase", () => ({
   doc: vi.fn(),
   query: vi.fn(),
   where: vi.fn(),
+  getDoc: vi.fn(),
+  auth: { currentUser: { uid: "u1" } },
   db: {},
 }));
 
-import { getDocs, addDoc, setDoc } from "../firebase";
+import { getDocs, addDoc, setDoc, getDoc } from "../firebase";
 
 // Helper to reset mocks before each test
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(getDoc).mockResolvedValue({
+    exists: () => true,
+    data: () => ({ role: "staff" }),
+  } as unknown as { exists: () => boolean; data: () => { role: string } });
 });
 
 // Simplified mock helpers
