@@ -21,7 +21,9 @@
     "coverage:check": "node scripts/check-coverage.js",
     "agent:init": "node scripts/agent-init.js",
     "agent:complete": "node scripts/task-complete.js",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "load:test": "node scripts/performance/load-test.js",
+    "lighthouse": "node scripts/performance/lighthouse.js"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -54,6 +56,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "autocannon": "^8.0.0",
     "autoprefixer": "^10.4.21",
     "cypress": "^14.5.0",
     "eslint": "^9.29.0",
@@ -63,6 +66,7 @@
     "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
     "jsdom": "^26.1.0",
+    "lighthouse": "^12.7.0",
     "lint-staged": "^16.1.2",
     "node-mocks-http": "^1.17.2",
     "postcss": "^8.5.6",
