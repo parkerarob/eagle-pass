@@ -40,24 +40,24 @@
 
 - [x] **Pass Closure**
   - [x] Complete closePass() function
-  - [ ] Add automatic closure on period change
-  - [ ] Implement force-close for admins
+  - [x] Add automatic closure on period change
+  - [x] Implement force-close for admins
   - [x] Add pass archival system
 
 ### 1.3 Location Management
 
 - [x] **Location CRUD Operations**
   - [x] Create location management interface
-  - [ ] Implement staff assignment to locations
-  - [ ] Add period-based location overrides
-  - [ ] Create shared location support
+  - [x] Implement staff assignment to locations
+  - [x] Add period-based location overrides
+  - [x] Create shared location support
   - [x] Add planning period blocking
 
 - [x] **Location Permissions**
   - [x] Implement location-based pass restrictions
-  - [ ] Add approval requirements per location
+  - [x] Add approval requirements per location
   - [x] Create location capacity limits
-  - [ ] Add location-specific time limits
+  - [x] Add location-specific time limits
 
 ### 1.4 Schedule Management
 
