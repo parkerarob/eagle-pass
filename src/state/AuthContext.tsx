@@ -38,7 +38,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email: "test@example.com",
         displayName: "Test User",
       } as User);
-      setRole("student");
+      const stored =
+        typeof window !== "undefined" ? localStorage.getItem("testRole") : null;
+      setRole(stored || "student");
       setLoading(false);
       return;
     }

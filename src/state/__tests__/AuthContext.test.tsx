@@ -22,4 +22,15 @@ describe("AuthContext", () => {
     expect(screen.getByText("test@example.com")).toBeInTheDocument();
     expect(screen.getByText("student")).toBeInTheDocument();
   });
+
+  it("allows role override via localStorage", () => {
+    localStorage.setItem("testRole", "admin");
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>,
+    );
+    expect(screen.getByText("admin")).toBeInTheDocument();
+    localStorage.removeItem("testRole");
+  });
 });

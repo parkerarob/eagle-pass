@@ -274,41 +274,41 @@ Last verification on 2025-06-30: tests pass, coverage 48.38%.
 
 ### 4.3 E2E Testing with Cypress
 
-- [ ] **Authentication E2E Tests**
-  - [ ] Test Google SSO login flow
-  - [ ] Test role-based redirects
-  - [ ] Test logout functionality
-  - [ ] Test session persistence
-  - [ ] Test unauthorized access prevention
+- [x] **Authentication E2E Tests**
+  - [x] Test Google SSO login flow
+  - [x] Test role-based redirects
+  - [x] Test logout functionality
+  - [x] Test session persistence
+  - [x] Test unauthorized access prevention
 
-- [ ] **Pass Lifecycle E2E Tests**
-  - [ ] Test complete pass creation flow
-  - [ ] Test check-in/out sequences
-  - [ ] Test multi-stop passes
-  - [ ] Test restroom exception flow
-  - [ ] Test pass closure scenarios
-  - [ ] Test escalation triggers
+- [x] **Pass Lifecycle E2E Tests**
+  - [x] Test complete pass creation flow
+  - [x] Test check-in/out sequences
+  - [x] Test multi-stop passes
+  - [x] Test restroom exception flow
+  - [x] Test pass closure scenarios
+  - [x] Test escalation triggers
 
-- [ ] **Permission E2E Tests**
-  - [ ] Test student permissions
-  - [ ] Test teacher permissions
-  - [ ] Test admin permissions
-  - [ ] Test location-based restrictions
-  - [ ] Test group pass overrides
+- [x] **Permission E2E Tests**
+  - [x] Test student permissions
+  - [x] Test teacher permissions
+  - [x] Test admin permissions
+  - [x] Test location-based restrictions
+  - [x] Test group pass overrides
 
-- [ ] **Data Management E2E Tests**
-  - [ ] Test CSV import flows
-  - [ ] Test data export with PII masking
-  - [ ] Test schedule management
-  - [ ] Test report generation
-  - [ ] Test audit trail creation
+- [x] **Data Management E2E Tests**
+  - [x] Test CSV import flows
+  - [x] Test data export with PII masking
+  - [x] Test schedule management
+  - [x] Test report generation
+  - [x] Test audit trail creation
 
-- [ ] **Mobile E2E Tests**
-  - [ ] Test responsive design
-  - [ ] Test touch interactions
-  - [ ] Test PWA installation
-  - [ ] Test offline functionality
-  - [ ] Test camera/QR code scanning
+- [x] **Mobile E2E Tests**
+  - [x] Test responsive design
+  - [x] Test touch interactions
+  - [x] Test PWA installation
+  - [x] Test offline functionality
+  - [x] Test camera/QR code scanning
 
 ### 4.4 Performance Testing
 

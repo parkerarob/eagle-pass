@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PassForm } from "../components/PassForm";
 import { CheckInButton } from "../components/CheckInButton";
 import { ReturnButton } from "../components/ReturnButton";
@@ -10,6 +10,17 @@ export default function PassLifecyclePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (
+      import.meta.env.MODE === "test" ||
+      (typeof window !== "undefined" && "Cypress" in window)
+    ) {
+      (
+        window as unknown as { __setPassForTest?: (p: Pass | null) => void }
+      ).__setPassForTest = setPass;
+    }
+  }, []);
 
   const handleCreatePass = async (data: {
     studentId: string;
