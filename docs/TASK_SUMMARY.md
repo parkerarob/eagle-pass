@@ -42,7 +42,7 @@ E2E test coverage: Complete user flows
 
 ## Current Status
 
-**Test Coverage:** 48.38% (verified 2025-06-30)
+**Test Coverage:** 60.68% (verified 2025-06-30)
 
 ### ✅ Completed
 
@@ -64,6 +64,7 @@ E2E test coverage: Complete user flows
 - Automatic pass closure on period change
 - Admin force-close functionality
 - Advanced location features (staff assignment, overrides, approvals, time limits)
+- Integration tests implemented (API & components)
 
 ### 🔄 In Progress
 - Increase test coverage (current 57.91%)
